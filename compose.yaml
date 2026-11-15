@@ -2,9 +2,10 @@
 #
 #   docker compose up -d --build          start (builds the image)
 #   docker compose logs -f app            logs
-#   docker compose down                   stop (volumes survive)
+#   docker compose down                   stop (the volume survives)
 #
-# Backups: see scripts/backup.sh and scripts/restore.sh.
+# One named volume holds everything the app writes: database, sessions and
+# media. Backing it up is a host-side job — see DOCKER.md.
 
 name: reise-blog
 
@@ -21,15 +22,14 @@ services:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: "4321"
-      # Everything the app persists lives under these paths (see volumes).
+      # Everything the app persists lives under /data (see the volume below).
       EMDASH_DATA_DIR: /data
       EMDASH_DB_PATH: /data/data.db
-      EMDASH_UPLOADS_DIR: /uploads
+      EMDASH_UPLOADS_DIR: /data/uploads
     ports:
       - "4321:4321"
     volumes:
       - data:/data
-      - uploads:/uploads
     healthcheck:
       test:
         - CMD
@@ -41,17 +41,5 @@ services:
       retries: 5
       start_period: 30s
 
-  # Helper container for backups and restores. It is not started by
-  # `docker compose up`; the scripts run it on demand:
-  #   docker compose run --rm tools sh -c '...'
-  tools:
-    image: alpine:3
-    profiles: ["tools"]
-    volumes:
-      - data:/data
-      - uploads:/uploads
-      - ./backups:/backups
-
 volumes:
   data:
-  uploads:

@@ -10,7 +10,7 @@ ENV PATH=$PNPM_HOME:$PATH
 # runtime environment variables would come too late.
 ENV EMDASH_DATA_DIR=/data
 ENV EMDASH_DB_PATH=/data/data.db
-ENV EMDASH_UPLOADS_DIR=/uploads
+ENV EMDASH_UPLOADS_DIR=/data/uploads
 
 # pnpm is pinned in package.json (packageManager)
 RUN corepack enable
@@ -37,7 +37,7 @@ ENV PATH=$PNPM_HOME:$PATH
 # Same paths the build used, so runtime and build agree.
 ENV EMDASH_DATA_DIR=/data
 ENV EMDASH_DB_PATH=/data/data.db
-ENV EMDASH_UPLOADS_DIR=/uploads
+ENV EMDASH_UPLOADS_DIR=/data/uploads
 
 WORKDIR /app
 
@@ -46,8 +46,8 @@ COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/seed ./seed
 
-# Data lives on volumes: /data (SQLite + sessions) and /uploads (media).
-RUN mkdir -p /data /uploads
+# One volume, three things inside it.
+RUN mkdir -p /data/uploads /data/sessions
 
 EXPOSE 4321
 
