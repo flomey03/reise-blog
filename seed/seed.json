@@ -159,18 +159,23 @@
 			"items": [
 				{
 					"type": "custom",
-					"label": "Home",
+					"label": "Start",
 					"url": "/"
 				},
 				{
 					"type": "custom",
-					"label": "About",
-					"url": "/pages/about"
+					"label": "Timeline",
+					"url": "/timeline"
 				},
 				{
 					"type": "custom",
-					"label": "Posts",
-					"url": "/posts"
+					"label": "Karte",
+					"url": "/map"
+				},
+				{
+					"type": "custom",
+					"label": "Kategorien",
+					"url": "/categories"
 				}
 			]
 		}

@@ -1,0 +1,110 @@
+---
+import { getTaxonomyTermsWithCacheHint } from "emdash";
+import Base from "../layouts/Base.astro";
+
+export const prerender = false;
+
+/** Overview of every category, with its visible post count. */
+const { data: categories, cacheHint } = await getTaxonomyTermsWithCacheHint(
+	"category",
+	{ includeCounts: true },
+);
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+const visible = categories
+	.filter((category) => (category.count ?? 0) > 0)
+	.sort((a, b) => a.label.localeCompare(b.label, "de"));
+---
+
+<Base title="Kategorien" description="Alle Kategorien mit ihren Beiträgen.">
+	<header class="band intro">
+		<div class="frame">
+			<p class="eyebrow">Übersicht</p>
+			<h1 class="intro__title">Kategorien</h1>
+			<p class="intro__lead">
+				Alle Themen, zu denen Beiträge erschienen sind.
+			</p>
+		</div>
+	</header>
+
+	<section class="band section">
+		<div class="frame">
+			{visible.length === 0 ? (
+				<p class="empty-state">Noch keine Kategorien mit Beiträgen.</p>
+			) : (
+				<ul class="category-grid">
+					{visible.map((category) => (
+						<li>
+							<a class="category" href={`/category/${category.slug}`}>
+								<span class="category__label">{category.label}</span>
+								{category.description && (
+									<span class="category__description">
+										{category.description}
+									</span>
+								)}
+								<span class="category__count">
+									{category.count}
+									{category.count === 1 ? " Beitrag" : " Beiträge"}
+								</span>
+							</a>
+						</li>
+					))}
+				</ul>
+			)}
+		</div>
+	</section>
+</Base>
+
+<style>
+	.category-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+		gap: var(--spacing-4);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.category {
+		display: grid;
+		gap: var(--spacing-2);
+		height: 100%;
+		padding: var(--spacing-5);
+		border-radius: var(--radius-xl);
+		background: var(--color-surface);
+		box-shadow: var(--shadow-card);
+		text-decoration: none;
+		transition: box-shadow var(--transition-fast);
+	}
+
+	.category:hover {
+		box-shadow: var(--shadow-card-hover);
+	}
+
+	.category__label {
+		font-size: var(--font-size-lg);
+		font-weight: var(--font-weight-heading);
+		line-height: var(--leading-snug);
+		color: var(--color-text);
+	}
+
+	.category__description {
+		font-size: var(--font-size-sm);
+		line-height: var(--leading-normal);
+		color: var(--color-text-secondary);
+	}
+
+	.category__count {
+		margin-top: auto;
+		padding-top: var(--spacing-2);
+		font-family: var(--font-mono);
+		font-size: var(--font-size-label);
+		letter-spacing: var(--tracking-wider);
+		text-transform: uppercase;
+		color: var(--color-muted);
+	}
+
+	.empty-state {
+		color: var(--color-muted);
+	}
+</style>
