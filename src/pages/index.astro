@@ -7,6 +7,7 @@ import {
 import Base from "../layouts/Base.astro";
 import PostCard from "../components/PostCard.astro";
 import { resolveBlogSiteIdentity } from "../utils/site-identity";
+import { canReadPost } from "../lib/members";
 
 // Limit to what we render (1 featured + 6 grid). The DB does the slicing
 // instead of fetching every post and discarding the tail in JS.
@@ -23,9 +24,14 @@ const { siteTitle, siteTagline } = resolveBlogSiteIdentity(settings);
 
 if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
 
+// Only posts this visitor is allowed to read (member groups, see lib/members).
+const readablePosts = posts.filter((post) =>
+	canReadPost(Astro.locals, post.data.groups),
+);
+
 // Trim the lookahead post used to detect overflow
-const visiblePosts = posts.slice(0, POSTS_PER_PAGE);
-const hasMorePosts = posts.length > POSTS_PER_PAGE;
+const visiblePosts = readablePosts.slice(0, POSTS_PER_PAGE);
+const hasMorePosts = readablePosts.length > POSTS_PER_PAGE;
 
 // Find the first post with a featured image for the hero
 const featuredPost = visiblePosts.find((p) => p.data.featured_image);

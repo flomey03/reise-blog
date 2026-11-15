@@ -3,8 +3,9 @@ import { getEmDashCollection, getSiteSettings } from "emdash";
 
 import { getSiteLocale } from "../utils/locale";
 import { resolveBlogSiteIdentity } from "../utils/site-identity";
+import { canReadPost } from "../lib/members";
 
-export const GET: APIRoute = async ({ site, url }) => {
+export const GET: APIRoute = async ({ site, url, locals }) => {
 	const siteUrl = site ?? new URL(url.origin);
 	const { siteTitle, siteTagline } = resolveBlogSiteIdentity(await getSiteSettings());
 
@@ -14,6 +15,7 @@ export const GET: APIRoute = async ({ site, url }) => {
 	});
 
 	const items = posts
+		.filter((post) => canReadPost(locals, post.data.groups))
 		.map((post) => {
 			if (!post.data.publishedAt) return null;
 			const pubDate = post.data.publishedAt.toUTCString();

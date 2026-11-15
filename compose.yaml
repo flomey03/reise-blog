@@ -1,0 +1,57 @@
+# Declarative deployment for the blog.
+#
+#   docker compose up -d --build          start (builds the image)
+#   docker compose logs -f app            logs
+#   docker compose down                   stop (volumes survive)
+#
+# Backups: see scripts/backup.sh and scripts/restore.sh.
+
+name: reise-blog
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: reise-blog:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: "4321"
+      # Everything the app persists lives under these paths (see volumes).
+      EMDASH_DATA_DIR: /data
+      EMDASH_DB_PATH: /data/data.db
+      EMDASH_UPLOADS_DIR: /uploads
+    ports:
+      - "4321:4321"
+    volumes:
+      - data:/data
+      - uploads:/uploads
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:4321/_emdash/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Helper container for backups and restores. It is not started by
+  # `docker compose up`; the scripts run it on demand:
+  #   docker compose run --rm tools sh -c '...'
+  tools:
+    image: alpine:3
+    profiles: ["tools"]
+    volumes:
+      - data:/data
+      - uploads:/uploads
+      - ./backups:/backups
+
+volumes:
+  data:
+  uploads:

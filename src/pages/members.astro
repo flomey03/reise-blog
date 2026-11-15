@@ -1,0 +1,192 @@
+---
+import Base from "../layouts/Base.astro";
+import { GROUPS } from "../lib/groups";
+import { ADMIN_ROLE, isAdmin, isMember } from "../lib/members";
+import { listMembers } from "../lib/server/member-groups";
+
+export const prerender = false;
+
+if (!isAdmin(Astro.locals)) {
+	return Astro.redirect(isMember(Astro.locals) ? "/" : "/login");
+}
+
+const members = await listMembers();
+const saved = Astro.url.searchParams.get("gespeichert");
+const failed = Astro.url.searchParams.get("fehler");
+---
+
+<Base title="Mitglieder" description="Gruppen der Mitglieder verwalten.">
+	<header class="band intro">
+		<div class="frame">
+			<p class="eyebrow">Verwaltung</p>
+			<h1 class="intro__title">Mitglieder</h1>
+			<p class="intro__lead">
+				Lege fest, in welchen Gruppen ein Konto liest. Beiträge sind ihrer
+				Gruppe zugeordnet; wer nicht in der Gruppe ist, sieht nur den Teaser.
+			</p>
+		</div>
+	</header>
+
+	<section class="band section">
+		<div class="frame members">
+			{
+				saved && (
+					<p class="notice" role="status">
+						Gespeichert.
+					</p>
+				)
+			}
+			{
+				failed && (
+					<p class="notice notice--error" role="alert">
+						Speichern fehlgeschlagen.
+					</p>
+				)
+			}
+
+			{
+				members.length === 0 ? (
+					<p class="empty">Noch keine Konten vorhanden.</p>
+				) : (
+					<ul class="member-list">
+						{members.map((member) => (
+							<li class="member">
+								<form method="post" action="/api/admin/member-groups">
+									<input type="hidden" name="userId" value={member.id} />
+									<div class="member__head">
+										<div>
+											<p class="member__name">
+												{member.name ?? member.email.split("@")[0]}
+											</p>
+											<p class="member__mail">{member.email}</p>
+										</div>
+										<p class="member__role">
+											{member.role >= ADMIN_ROLE ? "Admin" : "Mitglied"}
+										</p>
+									</div>
+
+									<fieldset class="member__groups">
+										<legend class="eyebrow">Gruppen</legend>
+										{GROUPS.map((group) => (
+											<label class="group">
+												<input
+													type="checkbox"
+													name="groups"
+													value={group.id}
+													checked={member.groups.includes(group.id)}
+												/>
+												<span>
+													{group.label}
+													<span class="group__hint">{group.hint}</span>
+												</span>
+											</label>
+										))}
+									</fieldset>
+
+									<button class="btn" type="submit">Speichern</button>
+								</form>
+							</li>
+						))}
+					</ul>
+				)
+			}
+		</div>
+	</section>
+</Base>
+
+<style>
+	.members {
+		display: grid;
+		gap: var(--spacing-6);
+	}
+
+	.notice {
+		padding: var(--spacing-3) var(--spacing-4);
+		border-radius: var(--radius);
+		background: var(--color-fill);
+		font-size: var(--font-size-sm);
+	}
+
+	.notice--error {
+		background: var(--color-fill-strong);
+		box-shadow: inset 0 0 0 1px var(--color-border-strong);
+	}
+
+	.empty {
+		color: var(--color-muted);
+	}
+
+	.member-list {
+		display: grid;
+		gap: var(--spacing-4);
+		list-style: none;
+	}
+
+	.member {
+		padding: var(--spacing-6);
+		border-radius: var(--radius-xl);
+		background: var(--color-surface);
+		box-shadow: var(--shadow-card);
+	}
+
+	.member form {
+		display: grid;
+		gap: var(--spacing-4);
+	}
+
+	.member__head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: var(--spacing-2);
+	}
+
+	.member__name {
+		font-weight: 600;
+	}
+
+	.member__mail,
+	.member__role {
+		font-size: var(--font-size-sm);
+		color: var(--color-muted);
+	}
+
+	.member__groups {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--spacing-3) var(--spacing-5);
+		padding: 0;
+		border: 0;
+		margin: 0;
+	}
+
+	.member__groups legend {
+		padding: 0;
+		margin-block-end: var(--spacing-2);
+		width: 100%;
+	}
+
+	.group {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--spacing-2);
+		font-size: var(--font-size-sm);
+		cursor: pointer;
+	}
+
+	.group input {
+		margin-block-start: 2px;
+		accent-color: var(--color-brand);
+	}
+
+	.group__hint {
+		display: block;
+		color: var(--color-muted);
+		font-size: var(--font-size-xs);
+	}
+
+	.member .btn {
+		justify-self: start;
+	}
+</style>

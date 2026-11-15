@@ -3,12 +3,13 @@ import { getEmDashCollection, getTermsForEntries } from "emdash";
 import Base from "../../layouts/Base.astro";
 import PostCard from "../../components/PostCard.astro";
 import Pagination from "../../components/Pagination.astro";
+import { canReadPost } from "../../lib/members";
 
 // Sort in the database rather than in JS — lets the DB use its index on
 // published_at and avoids a full-table scan on the client.
 const cursor = Astro.url.searchParams.get("cursor") || undefined;
 const {
-	entries: posts,
+	entries: fetchedPosts,
 	cacheHint,
 	nextCursor,
 } = await getEmDashCollection("posts", {
@@ -16,6 +17,10 @@ const {
 	limit: 20,
 	cursor,
 });
+
+const posts = fetchedPosts.filter((post) =>
+	canReadPost(Astro.locals, post.data.groups),
+);
 
 if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
 

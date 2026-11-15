@@ -1,8 +1,9 @@
 ---
 export const prerender = false;
 
-import { search } from "emdash";
+import { search, getEmDashEntry } from "emdash";
 import Base from "../layouts/Base.astro";
+import { canReadPost } from "../lib/members";
 
 const query = Astro.url.searchParams.get("q")?.trim() || "";
 
@@ -23,10 +24,25 @@ function escapeHtml(text: string) {
 		.replaceAll("'", "&#39;");
 }
 
-// The snippet is cut from the first indexed field, which for posts is the
-// title. When it is the whole title, show its highlights in the heading
-// instead of repeating the title underneath.
-const rows = results.map((result) => {
+/**
+ * The search index has no notion of audiences, so every hit is re-read to
+ * check the visitor's groups before it is shown.
+ */
+const visibleResults = (
+	await Promise.all(
+		results.map(async (result) => {
+			const { entry } = await getEmDashEntry(
+				"posts",
+				result.slug ?? result.id,
+			);
+			return entry && canReadPost(Astro.locals, entry.data.groups)
+				? result
+				: null;
+		}),
+	)
+).filter((result) => result !== null);
+
+const rows = visibleResults.map((result) => {
 	const title = result.title ?? "Untitled";
 	const snippetIsTitle =
 		result.snippet?.replaceAll("<mark>", "").replaceAll("</mark>", "") ===

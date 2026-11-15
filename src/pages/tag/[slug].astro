@@ -8,6 +8,7 @@ import {
 import Base from "../../layouts/Base.astro";
 import PostCard from "../../components/PostCard.astro";
 import Pagination from "../../components/Pagination.astro";
+import { canReadPost } from "../../lib/members";
 
 const slug = decodeSlug(Astro.params.slug);
 const termsResult = await getTaxonomyTermsWithCacheHint("tag", {
@@ -43,12 +44,14 @@ const tagsByEntry = await getTermsForEntries(
 	posts.map((p) => p.data.id),
 	"tag",
 );
-const filteredPosts = posts.map((post) => ({
-	post,
-	tags: (tagsByEntry.get(post.data.id) ?? []).filter(
-		(t) => t.slug !== term.slug,
-	),
-}));
+const filteredPosts = posts
+	.filter((post) => canReadPost(Astro.locals, post.data.groups))
+	.map((post) => ({
+		post,
+		tags: (tagsByEntry.get(post.data.id) ?? []).filter(
+			(t) => t.slug !== term.slug,
+		),
+	}));
 ---
 
 <Base

@@ -1,71 +1,66 @@
 import type { APIRoute } from "astro";
+import { getSiteSettings } from "emdash";
 import { withEmDashRuntime } from "emdash/middleware";
+import { MEMBER_ROLE } from "../../lib/members";
+import { sendLoginLink } from "../../lib/server/login-link";
+import { createRateLimiter } from "../../lib/server/rate-limit";
+import {
+	EMAIL_PATTERN,
+	jsonResponse,
+	readJsonBody,
+	readString,
+} from "../../lib/server/http";
 
 export const prerender = false;
 
 /**
- * Self-service registration for readers.
+ * Self-service registration.
  *
- * Flow: the visitor enters an email address. If the address belongs to an
- * allowed domain (EmDash: Settings -> Security -> allowed domains), a user
- * with the domain's default role is created and EmDash's own magic-link
- * endpoint sends the sign-in link. Clicking that link proves ownership of the
- * address and creates the session -- no password, no passkey needed.
- *
- * Everything below deliberately answers with the same generic payload so the
- * endpoint cannot be used to enumerate accounts.
+ * A visitor may sign up with an address from a domain an admin allowlisted
+ * (EmDash: Settings → Security). We create the account with the domain's
+ * default role and immediately mail a sign-in link — the click on that link
+ * proves the address belongs to the visitor.
  */
 
-const OK = { ok: true };
+const limiter = createRateLimiter(5, 10 * 60 * 1000);
 
-/** Highest number of registration attempts per IP inside the window. */
-const MAX_ATTEMPTS = 5;
-const WINDOW_MS = 10 * 60 * 1000;
-const attempts = new Map<string, { count: number; resetAt: number }>();
-
-function isRateLimited(key: string): boolean {
-	const now = Date.now();
-	const entry = attempts.get(key);
-	if (!entry || entry.resetAt <= now) {
-		attempts.set(key, { count: 1, resetAt: now + WINDOW_MS });
-		return false;
-	}
-	entry.count += 1;
-	return entry.count > MAX_ATTEMPTS;
-}
-
-/** Deliberately simple: one @, a dot in the domain, no whitespace. */
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-/** Subscribers (10) are the lowest role and the right default for readers. */
-const MEMBER_ROLE = 10;
-
-function json(body: unknown, status = 200): Response {
-	return new Response(JSON.stringify(body), {
-		status,
-		headers: { "content-type": "application/json" },
-	});
-}
+const GENERIC = { ok: true };
 
 export const POST: APIRoute = async ({ request, url, clientAddress }) => {
-	if (isRateLimited(clientAddress ?? "unknown")) return json(OK);
+	if (!limiter.attempt(clientAddress ?? "unknown")) return jsonResponse(GENERIC);
 
-	let email = "";
-	try {
-		const body = (await request.json()) as { email?: unknown };
-		if (typeof body?.email === "string") email = body.email.trim().toLowerCase();
-	} catch {
-		return json(OK);
-	}
-	if (!EMAIL_PATTERN.test(email)) return json(OK);
+	const body = await readJsonBody(request);
+	const email = readString(body, "email").toLowerCase();
+	if (!EMAIL_PATTERN.test(email)) return jsonResponse(GENERIC);
 
+	const allowed = await ensureAccount(email).catch((error) => {
+		console.error("[signup] could not prepare account:", error);
+		return false;
+	});
+	if (!allowed) return jsonResponse(GENERIC);
+
+	const { title } = await getSiteSettings();
+
+	await sendLoginLink({
+		email,
+		origin: url.origin,
+		siteName: title ?? "Blog",
+	}).catch((error) => {
+		console.error("[signup] failed to send sign-in link:", error);
+	});
+
+	return jsonResponse(GENERIC);
+};
+
+/**
+ * Creates the account when the address' domain is allowlisted. Existing
+ * accounts are left untouched (signing up again just mails another link).
+ */
+async function ensureAccount(email: string): Promise<boolean> {
 	const domain = email.slice(email.lastIndexOf("@") + 1);
-	if (!domain) return json(OK);
+	if (!domain) return false;
 
-	// Allowed-domain check and account creation share one runtime scope.
-	const allowed = await withEmDashRuntime(async (runtime) => {
-		const db = runtime.db;
-
+	return withEmDashRuntime(async ({ db }) => {
 		const allowedDomain = await db
 			.selectFrom("allowed_domains")
 			.select(["default_role"])
@@ -81,7 +76,6 @@ export const POST: APIRoute = async ({ request, url, clientAddress }) => {
 			.executeTakeFirst();
 		if (existing) return true;
 
-		const role = Math.max(Number(allowedDomain.default_role) || MEMBER_ROLE, MEMBER_ROLE);
 		await db
 			.insertInto("users")
 			.values({
@@ -89,31 +83,13 @@ export const POST: APIRoute = async ({ request, url, clientAddress }) => {
 				email,
 				name: null,
 				avatar_url: null,
-				role,
-				// Set once the visitor clicks the link we send below; until then
-				// the address is unproven.
+				role: Math.max(Number(allowedDomain.default_role) || MEMBER_ROLE, MEMBER_ROLE),
+				// Proven by the sign-in link that follows.
 				email_verified: 0,
 				data: null,
 			})
 			.execute();
 
 		return true;
-	}).catch((error) => {
-		console.error("[signup] failed to prepare account:", error);
-		return false;
 	});
-
-	if (allowed) {
-		// EmDash's own endpoint builds the token, stores the hash and sends the
-		// mail through whichever email provider is active (console in dev).
-		await fetch(new URL("/_emdash/api/auth/magic-link/send", url.origin), {
-			method: "POST",
-			headers: { "content-type": "application/json" },
-			body: JSON.stringify({ email }),
-		}).catch((error) => {
-			console.error("[signup] failed to send sign-in link:", error);
-		});
-	}
-
-	return json(OK);
-};
+}

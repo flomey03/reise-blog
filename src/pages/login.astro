@@ -1,160 +1,78 @@
 ---
 import Base from "../layouts/Base.astro";
+import AuthForm from "../components/AuthForm.astro";
+import { isAdmin } from "../lib/members";
+import "../styles/auth.css";
 
 export const prerender = false;
 
 const user = Astro.locals.user;
+const linkError = Astro.url.searchParams.get("fehler") === "link";
+const next = Astro.url.searchParams.get("next");
+const admin = isAdmin(Astro.locals);
 ---
 
-<Base title="Anmelden" description="Melde dich an, um alle Reiseberichte zu lesen.">
-	<section class="auth">
-		{user ? (
-			<>
-				<h1>Du bist angemeldet</h1>
-				<p class="lead">
-					Angemeldet als <strong>{user.email}</strong>.
-				</p>
-				<p class="meta">
-					<a href="/">Weiter zur Startseite</a>
-				</p>
-			</>
-		) : (
-			<>
-				<h1>Anmelden</h1>
-				<p class="lead">
-					Wir schicken dir einen Link per E-Mail. Damit bist du angemeldet, ohne
-					Passwort.
-				</p>
+<Base title="Anmelden" description="Melde dich an, um alle Beiträge zu lesen.">
+	<header class="band intro">
+		<div class="frame">
+			<p class="eyebrow">Mitgliederbereich</p>
+			<h1 class="intro__title">Anmelden</h1>
+			<p class="intro__lead">
+				Wir schicken dir einen Anmelde-Link per E-Mail. Ein Passwort brauchst du
+				nicht.
+			</p>
+		</div>
+	</header>
 
-				<form id="login-form" novalidate>
-					<label for="email">E-Mail-Adresse</label>
-					<input
-						id="email"
-						name="email"
-						type="email"
-						required
-						autocomplete="email"
-						inputmode="email"
-						placeholder="du@example.com"
-					/>
-					<button type="submit">Anmelde-Link schicken</button>
-				</form>
+	<section class="band section">
+		<div class="frame">
+			<div class="auth">
+				<div class="auth-card">
+					{
+						user ? (
+							<>
+								<p class="eyebrow">Angemeldet</p>
+								<p class="auth-text">
+									Du bist als <strong>{user.email}</strong> angemeldet.
+								</p>
+								<a class="btn" href="/">Weiter zur Startseite</a>
+								{admin && <a class="auth-admin-link" href="/members">Mitglieder verwalten</a>}
+							</>
+						) : (
+							<>
+								{
+									linkError && (
+										<p class="auth-feedback" data-state="error" role="alert">
+											Der Link ist abgelaufen oder wurde schon benutzt. Fordere
+											bitte einen neuen an.
+										</p>
+									)
+								}
+								<AuthForm
+									endpoint="/api/login"
+									buttonLabel="Anmelde-Link schicken"
+									successMessage="Wenn ein Konto mit dieser Adresse existiert, ist der Anmelde-Link unterwegs. Schau in dein Postfach."
+									next={next}
+								/>
+							</>
+						)
+					}
+				</div>
 
-				<p id="feedback" class="feedback" hidden></p>
-
-				<hr />
-
-				<p class="meta">
-					Noch kein Konto? <a href="/signup">Konto anlegen</a>
-				</p>
-				<p class="meta small">
-					Du hast auf diesem Gerät einen Passkey eingerichtet?
-					<a href="/_emdash/admin/login">Stattdessen mit Passkey anmelden</a>
-				</p>
-			</>
-		)}
+				{
+					!user && (
+						<div class="auth-alt">
+							<p>
+								Noch kein Konto? <a href="/signup">Konto anlegen</a>
+							</p>
+							<p class="auth-hint">
+								Du hast auf diesem Gerät einen Passkey eingerichtet?
+								<a href="/_emdash/admin/login">Stattdessen mit Passkey anmelden</a>
+							</p>
+						</div>
+					)
+				}
+			</div>
+		</div>
 	</section>
 </Base>
-
-<style>
-	.auth {
-		max-width: 26rem;
-		margin: 3rem auto;
-		padding: 0 1rem;
-	}
-	.lead {
-		color: #444;
-	}
-	form {
-		display: grid;
-		gap: 0.5rem;
-		margin: 1.5rem 0;
-	}
-	label {
-		font-weight: 600;
-	}
-	input {
-		padding: 0.6rem 0.7rem;
-		border: 1px solid #bbb;
-		border-radius: 6px;
-		font: inherit;
-	}
-	button {
-		margin-top: 0.5rem;
-		padding: 0.65rem 1rem;
-		border: 0;
-		border-radius: 6px;
-		background: #23252a;
-		color: #fff;
-		font: inherit;
-		cursor: pointer;
-	}
-	button[disabled] {
-		opacity: 0.6;
-		cursor: progress;
-	}
-	.feedback {
-		padding: 0.75rem 0.9rem;
-		border-radius: 6px;
-		background: #eef2f0;
-		border: 1px solid #cfe0d6;
-	}
-	.feedback[data-state="error"] {
-		background: #fdf0ef;
-		border-color: #f0cdc9;
-	}
-	.meta {
-		color: #444;
-	}
-	.meta.small {
-		font-size: 0.9rem;
-	}
-	hr {
-		border: 0;
-		border-top: 1px solid #e3e3e3;
-		margin: 2rem 0 1rem;
-	}
-</style>
-
-<script>
-	const form = document.getElementById("login-form") as HTMLFormElement | null;
-	const feedback = document.getElementById("feedback") as HTMLParagraphElement | null;
-	const button = form?.querySelector("button") as HTMLButtonElement | null;
-
-	function show(message: string, state: "ok" | "error") {
-		if (!feedback) return;
-		feedback.textContent = message;
-		feedback.dataset.state = state;
-		feedback.hidden = false;
-	}
-
-	form?.addEventListener("submit", async (event) => {
-		event.preventDefault();
-		if (!form || !button) return;
-
-		const email = (new FormData(form).get("email") as string | null)?.trim() ?? "";
-		if (!email) {
-			show("Bitte gib eine E-Mail-Adresse ein.", "error");
-			return;
-		}
-
-		button.disabled = true;
-		if (feedback) feedback.hidden = true;
-
-		try {
-			await fetch("/_emdash/api/auth/magic-link/send", {
-				method: "POST",
-				headers: { "content-type": "application/json" },
-				body: JSON.stringify({ email }),
-			});
-			show(
-				"Wenn ein Konto mit dieser Adresse existiert, ist der Anmelde-Link unterwegs. Schau in dein Postfach.",
-				"ok",
-			);
-		} catch {
-			show("Das hat gerade nicht geklappt. Bitte versuche es später noch einmal.", "error");
-		} finally {
-			button.disabled = false;
-		}
-	});
-</script>

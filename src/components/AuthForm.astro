@@ -1,0 +1,90 @@
+---
+/**
+ * Email form for the member pages: collects an address and posts it to an
+ * EmDash auth endpoint. Behaviour comes from data attributes so the same
+ * component serves both sign-in and sign-up.
+ */
+interface Props {
+	/** Auth endpoint to post `{ email, next }` to. */
+	endpoint: string;
+	buttonLabel: string;
+	/** Shown after a successful request (always generic, never leaks accounts). */
+	successMessage: string;
+	/** Local path to continue on after signing in. */
+	next?: string | null;
+}
+
+const { endpoint, buttonLabel, successMessage, next } = Astro.props;
+---
+
+<form
+	class="auth-form"
+	data-endpoint={endpoint}
+	data-success={successMessage}
+	data-next={next ?? ""}
+	data-empty="Bitte gib eine E-Mail-Adresse ein."
+	data-error="Das hat gerade nicht geklappt. Bitte versuche es später noch einmal."
+	novalidate
+>
+	<div class="field">
+		<label for="auth-email">E-Mail-Adresse</label>
+		<input
+			id="auth-email"
+			name="email"
+			type="email"
+			required
+			autocomplete="email"
+			inputmode="email"
+			placeholder="du@example.com"
+		/>
+	</div>
+
+	<button class="btn" type="submit">{buttonLabel}</button>
+
+	<p class="auth-feedback" aria-live="polite" hidden></p>
+</form>
+
+<script>
+	const form = document.querySelector<HTMLFormElement>(".auth-form");
+
+	if (form) {
+		const feedback = form.querySelector<HTMLParagraphElement>(".auth-feedback");
+		const button = form.querySelector<HTMLButtonElement>("button[type=submit]");
+		const { endpoint, success, empty, error, next } = form.dataset;
+
+		const show = (message: string, state: "ok" | "error") => {
+			if (!feedback) return;
+			feedback.textContent = message;
+			feedback.dataset.state = state;
+			feedback.hidden = false;
+		};
+
+		form.addEventListener("submit", async (event) => {
+			event.preventDefault();
+			if (!button) return;
+
+			const email = (new FormData(form).get("email") as string | null)?.trim() ?? "";
+			if (!email) {
+				show(empty ?? "", "error");
+				return;
+			}
+
+			button.disabled = true;
+			if (feedback) feedback.hidden = true;
+
+			try {
+				await fetch(endpoint ?? "", {
+					method: "POST",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify({ email, next: next || undefined }),
+				});
+				show(success ?? "", "ok");
+				form.reset();
+			} catch {
+				show(error ?? "", "error");
+			} finally {
+				button.disabled = false;
+			}
+		});
+	}
+</script>

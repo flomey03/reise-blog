@@ -41,6 +41,15 @@
 					"slug": "excerpt",
 					"label": "Excerpt",
 					"type": "text"
+				},
+				{
+					"slug": "groups",
+					"label": "Sichtbar für",
+					"type": "multiSelect",
+					"validation": {
+						"options": ["oeffentlich", "alle", "familie", "freunde", "privat"]
+					},
+					"defaultValue": ["alle"]
 				}
 			]
 		},

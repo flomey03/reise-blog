@@ -1,138 +1,38 @@
 ---
 import Base from "../layouts/Base.astro";
+import AuthForm from "../components/AuthForm.astro";
+import "../styles/auth.css";
 
 export const prerender = false;
 ---
 
-<Base title="Konto anlegen" description="Registriere dich, um alle Reiseberichte zu lesen.">
-	<section class="auth">
-		<h1>Konto anlegen</h1>
-		<p class="lead">
-			Trag deine E-Mail-Adresse ein. Wir schicken dir einen Anmelde-Link — ein
-			Passwort brauchst du nicht.
-		</p>
+<Base title="Konto anlegen" description="Registriere dich, um alle Beiträge zu lesen.">
+	<header class="band intro">
+		<div class="frame">
+			<p class="eyebrow">Mitgliederbereich</p>
+			<h1 class="intro__title">Konto anlegen</h1>
+			<p class="intro__lead">
+				Trag deine E-Mail-Adresse ein. Wir schicken dir einen Link, mit dem du
+				dich anmeldest — ein Passwort brauchst du nicht.
+			</p>
+		</div>
+	</header>
 
-		<form id="register-form" novalidate>
-			<label for="email">E-Mail-Adresse</label>
-			<input
-				id="email"
-				name="email"
-				type="email"
-				required
-				autocomplete="email"
-				inputmode="email"
-				placeholder="du@example.com"
-			/>
-			<button type="submit">Link anfordern</button>
-		</form>
+	<section class="band section">
+		<div class="frame">
+			<div class="auth">
+				<div class="auth-card">
+					<AuthForm
+						endpoint="/api/signup"
+						buttonLabel="Link anfordern"
+						successMessage="Wenn deine Adresse zugelassen ist, ist der Link unterwegs. Schau in dein Postfach (auch im Spam-Ordner)."
+					/>
+				</div>
 
-		<p id="feedback" class="feedback" hidden></p>
-
-		<hr />
-
-		<p class="meta">
-			Schon registriert? <a href="/login">Hier anmelden</a>
-		</p>
+				<div class="auth-alt">
+					<p>Schon registriert? <a href="/login">Hier anmelden</a></p>
+				</div>
+			</div>
+		</div>
 	</section>
 </Base>
-
-<style>
-	.auth {
-		max-width: 26rem;
-		margin: 3rem auto;
-		padding: 0 1rem;
-	}
-	.lead {
-		color: #444;
-	}
-	form {
-		display: grid;
-		gap: 0.5rem;
-		margin: 1.5rem 0;
-	}
-	label {
-		font-weight: 600;
-	}
-	input {
-		padding: 0.6rem 0.7rem;
-		border: 1px solid #bbb;
-		border-radius: 6px;
-		font: inherit;
-	}
-	button {
-		margin-top: 0.5rem;
-		padding: 0.65rem 1rem;
-		border: 0;
-		border-radius: 6px;
-		background: #23252a;
-		color: #fff;
-		font: inherit;
-		cursor: pointer;
-	}
-	button[disabled] {
-		opacity: 0.6;
-		cursor: progress;
-	}
-	.feedback {
-		padding: 0.75rem 0.9rem;
-		border-radius: 6px;
-		background: #eef2f0;
-		border: 1px solid #cfe0d6;
-	}
-	.feedback[data-state="error"] {
-		background: #fdf0ef;
-		border-color: #f0cdc9;
-	}
-	.meta {
-		color: #444;
-	}
-	hr {
-		border: 0;
-		border-top: 1px solid #e3e3e3;
-		margin: 2rem 0 1rem;
-	}
-</style>
-
-<script>
-	const form = document.getElementById("register-form") as HTMLFormElement | null;
-	const feedback = document.getElementById("feedback") as HTMLParagraphElement | null;
-	const button = form?.querySelector("button") as HTMLButtonElement | null;
-
-	function show(message: string, state: "ok" | "error") {
-		if (!feedback) return;
-		feedback.textContent = message;
-		feedback.dataset.state = state;
-		feedback.hidden = false;
-	}
-
-	form?.addEventListener("submit", async (event) => {
-		event.preventDefault();
-		if (!form || !button) return;
-
-		const email = (new FormData(form).get("email") as string | null)?.trim() ?? "";
-		if (!email) {
-			show("Bitte gib eine E-Mail-Adresse ein.", "error");
-			return;
-		}
-
-		button.disabled = true;
-		if (feedback) feedback.hidden = true;
-
-		try {
-			await fetch("/api/signup", {
-				method: "POST",
-				headers: { "content-type": "application/json" },
-				body: JSON.stringify({ email }),
-			});
-			show(
-				"Wenn deine Adresse zugelassen ist, ist der Link unterwegs. Schau in dein Postfach (auch im Spam-Ordner).",
-				"ok",
-			);
-			form.reset();
-		} catch {
-			show("Das hat gerade nicht geklappt. Bitte versuche es später noch einmal.", "error");
-		} finally {
-			button.disabled = false;
-		}
-	});
-</script>
