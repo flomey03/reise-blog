@@ -16,10 +16,11 @@ services:
       dockerfile: Dockerfile
     image: reise-blog:latest
     restart: unless-stopped
-    # Point APP_ENV_FILE at a file outside the repo (e.g. /etc/reise-blog/app.env)
-    # when the checkout should not hold secrets.
+    # Optional. Without a file the app generates the encryption key into the
+    # data volume on first start, so a fresh clone needs no manual secret step.
     env_file:
-      - ${APP_ENV_FILE:-.env}
+      - path: ${APP_ENV_FILE:-.env}
+        required: false
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0

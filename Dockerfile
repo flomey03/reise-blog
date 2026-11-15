@@ -49,6 +49,12 @@ COPY --from=build /app/seed ./seed
 # One volume, three things inside it.
 RUN mkdir -p /data/uploads /data/sessions
 
+# Generates the encryption key into the volume on first start, unless the
+# environment provides one.
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 EXPOSE 4321
 
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["node", "./dist/server/entry.mjs"]

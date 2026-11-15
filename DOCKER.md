@@ -40,35 +40,41 @@ docker compose up -d --build   # nach git pull: neu bauen und starten
 ## Schlüssel (`EMDASH_ENCRYPTION_KEY`)
 
 Der Schlüssel verschlüsselt Plugin-Secrets und das SMTP-Passwort **in der
-Datenbank**. Er gehört nicht ins Image und nicht ins Repo: Image-Layer sind für
-jeden lesbar, der das Image hat, und jede Umgebung bekäme denselben Schlüssel.
+Datenbank**. Er gehört nicht ins Image und nicht ins Repo.
 
-Einmalig auf dem Server erzeugen:
+**Der Container erzeugt ihn beim ersten Start selbst** und legt ihn im
+Daten-Volume ab:
 
-```bash
-npx emdash secrets generate --write=.env
+```text
+/data/secrets/encryption.key
 ```
 
-Das erzeugt `emdash_enc_v1_<43 Zeichen>` — das Format ist nicht optional,
-`openssl rand` allein passt nicht. Die Datei bleibt in `.gitignore`; wenn sie
-nicht im Checkout liegen soll, zeigt `APP_ENV_FILE` darauf:
+Dadurch ist ein Volume-Backup immer vollständig — Datenbank, Medien und der
+Schlüssel, der die verschlüsselten Werte öffnet. Kein manueller Schritt auf dem
+Server, kein Secret, das beim Restore verloren gehen kann.
+
+Vorrang, falls beides existiert:
+
+1. `EMDASH_ENCRYPTION_KEY` aus der Umgebung (`env_file` / `APP_ENV_FILE`) — ein
+   selbst gesetzter Schlüssel wird **nie** überschrieben.
+2. die Datei im Volume.
+3. sonst wird ein neuer Schlüssel erzeugt.
+
+Willst du den Schlüssel extern verwalten (Secret-Manager, Rotation), setz ihn
+per Env und lass die Datei im Volume in Ruhe:
 
 ```bash
-sudo install -d -m 700 /etc/reise-blog
-sudo npx emdash secrets generate --write=/etc/reise-blog/app.env
-sudo chmod 600 /etc/reise-blog/app.env
 APP_ENV_FILE=/etc/reise-blog/app.env docker compose up -d
 ```
 
-**Verlieren heißt verlieren.** Ohne den Schlüssel bleiben die verschlüsselten
-Werte unlesbar (SMTP-Passwort, Plugin-Einstellungen) — die Seite läuft weiter,
-aber diese Werte musst du neu eintragen. Deshalb: in den Passwortmanager und in
-jedes Backup.
+**Sicherheitshinweis:** Schlüssel und Chiffrat liegen im selben Volume. Wer das
+Volume vollständig kopiert, hat beides. Der Schlüssel schützt also gegen einen
+Datenbank-Dump ohne Volume (z. B. `data.db` allein weitergeben), nicht gegen
+einen kompletten Volume-Diebstahl. Für einen Familienblog ist das der bewusste
+Kompromiss für „Restore ohne Zusatzschritt".
 
-**Rotation** ist vorbereitet: `EMDASH_ENCRYPTION_KEY` darf eine
-kommagetrennte Liste sein. Der erste Schlüssel verschlüsselt Neues, alle
-gelisteten entschlüsseln weiter — alten Schlüssel erst entfernen, wenn alles neu
-geschrieben ist.
+**Rotation:** `EMDASH_ENCRYPTION_KEY` darf kommagetrennt sein — der erste
+Schlüssel verschlüsselt Neues, alle gelisteten entschlüsseln weiter.
 
 ## Backup (extern)
 
