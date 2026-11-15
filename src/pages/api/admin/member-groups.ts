@@ -13,7 +13,7 @@ export const prerender = false;
  */
 
 function forbidden(): Response {
-	return new Response("Nicht erlaubt", { status: 403 });
+	return new Response("Not allowed", { status: 403 });
 }
 
 function isAdmin(locals: App.Locals): boolean {
@@ -62,5 +62,5 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
 };
 
 function okPath(saved: boolean): string {
-	return saved ? "/members?gespeichert=1" : "/members?fehler=speichern";
+	return saved ? "/members?saved=1" : "/members?error=save";
 }

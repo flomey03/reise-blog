@@ -11,18 +11,17 @@ if (!isAdmin(Astro.locals)) {
 }
 
 const members = await listMembers();
-const saved = Astro.url.searchParams.get("gespeichert");
-const failed = Astro.url.searchParams.get("fehler");
+const saved = Astro.url.searchParams.get("saved");
+const failed = Astro.url.searchParams.get("error");
 ---
 
-<Base title="Mitglieder" description="Gruppen der Mitglieder verwalten.">
+<Base title="Members" description="Manage member groups.">
 	<header class="band intro">
 		<div class="frame">
-			<p class="eyebrow">Verwaltung</p>
-			<h1 class="intro__title">Mitglieder</h1>
+			<p class="eyebrow">Admin</p>
+			<h1 class="intro__title">Members</h1>
 			<p class="intro__lead">
-				Lege fest, in welchen Gruppen ein Konto liest. Beiträge sind ihrer
-				Gruppe zugeordnet; wer nicht in der Gruppe ist, sieht nur den Teaser.
+				Decide which groups an account reads from. Posts carry a group; readers outside it get no access.
 			</p>
 		</div>
 	</header>
@@ -32,21 +31,21 @@ const failed = Astro.url.searchParams.get("fehler");
 			{
 				saved && (
 					<p class="notice" role="status">
-						Gespeichert.
+						Saved.
 					</p>
 				)
 			}
 			{
 				failed && (
 					<p class="notice notice--error" role="alert">
-						Speichern fehlgeschlagen.
+						Saving failed.
 					</p>
 				)
 			}
 
 			{
 				members.length === 0 ? (
-					<p class="empty">Noch keine Konten vorhanden.</p>
+					<p class="empty">No accounts yet.</p>
 				) : (
 					<ul class="member-list">
 						{members.map((member) => (
@@ -61,12 +60,12 @@ const failed = Astro.url.searchParams.get("fehler");
 											<p class="member__mail">{member.email}</p>
 										</div>
 										<p class="member__role">
-											{member.role >= ADMIN_ROLE ? "Admin" : "Mitglied"}
+											{member.role >= ADMIN_ROLE ? "Admin" : "Member"}
 										</p>
 									</div>
 
 									<fieldset class="member__groups">
-										<legend class="eyebrow">Gruppen</legend>
+										<legend class="eyebrow">Groups</legend>
 										{GROUPS.map((group) => (
 											<label class="group">
 												<input
@@ -83,7 +82,7 @@ const failed = Astro.url.searchParams.get("fehler");
 										))}
 									</fieldset>
 
-									<button class="btn" type="submit">Speichern</button>
+									<button class="btn" type="submit">Save</button>
 								</form>
 							</li>
 						))}

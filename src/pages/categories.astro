@@ -13,16 +13,16 @@ if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
 
 const visible = categories
 	.filter((category) => (category.count ?? 0) > 0)
-	.sort((a, b) => a.label.localeCompare(b.label, "de"));
+	.sort((a, b) => a.label.localeCompare(b.label));
 ---
 
-<Base title="Kategorien" description="Alle Kategorien mit ihren Beiträgen.">
+<Base title="Categories" description="Every category and its posts.">
 	<header class="band intro">
 		<div class="frame">
-			<p class="eyebrow">Übersicht</p>
-			<h1 class="intro__title">Kategorien</h1>
+			<p class="eyebrow">Browse</p>
+			<h1 class="intro__title">Categories</h1>
 			<p class="intro__lead">
-				Alle Themen, zu denen Beiträge erschienen sind.
+				Every topic with published posts.
 			</p>
 		</div>
 	</header>
@@ -30,7 +30,7 @@ const visible = categories
 	<section class="band section">
 		<div class="frame">
 			{visible.length === 0 ? (
-				<p class="empty-state">Noch keine Kategorien mit Beiträgen.</p>
+				<p class="empty-state">No categories with posts yet.</p>
 			) : (
 				<ul class="category-grid">
 					{visible.map((category) => (
@@ -44,7 +44,7 @@ const visible = categories
 								)}
 								<span class="category__count">
 									{category.count}
-									{category.count === 1 ? " Beitrag" : " Beiträge"}
+									{category.count === 1 ? " post" : " posts"}
 								</span>
 							</a>
 						</li>

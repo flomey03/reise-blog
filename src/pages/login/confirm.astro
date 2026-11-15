@@ -10,14 +10,13 @@ const next = Astro.url.searchParams.get("next") ?? "/";
 if (!token) return Astro.redirect("/login");
 ---
 
-<Base title="Anmelden" description="Bestätige deinen Anmelde-Link.">
+<Base title="Sign in" description="Confirm your sign-in link.">
 	<header class="band intro">
 		<div class="frame">
-			<p class="eyebrow">Mitgliederbereich</p>
-			<h1 class="intro__title">Fast geschafft</h1>
+			<p class="eyebrow">Members</p>
+			<h1 class="intro__title">Almost there</h1>
 			<p class="intro__lead">
-				Ein Klick noch — dann bist du angemeldet. Der Link ist nur einmal
-				verwendbar.
+				One click and you are signed in. The link works once.
 			</p>
 		</div>
 	</header>
@@ -29,13 +28,13 @@ if (!token) return Astro.redirect("/login");
 					<form class="auth-form" method="post" action="/api/auth/confirm">
 						<input type="hidden" name="token" value={token} />
 						<input type="hidden" name="next" value={next} />
-						<button class="btn" type="submit">Jetzt anmelden</button>
+						<button class="btn" type="submit">Sign in now</button>
 					</form>
 				</div>
 
 				<div class="auth-alt">
 					<p>
-						Link abgelaufen? <a href="/login">Neuen Link anfordern</a>
+						Link expired? <a href="/login">Request a new one</a>
 					</p>
 				</div>
 			</div>

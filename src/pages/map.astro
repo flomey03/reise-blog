@@ -66,20 +66,19 @@ for (const post of readable) {
 ---
 
 <Base
-	title="Karte"
-	description="Alle Beiträge mit Koordinaten auf einer Karte."
+	title="Map"
+	description="Every post with coordinates on one map."
 >
 	<header class="band intro">
 		<div class="frame">
-			<p class="eyebrow">Übersicht</p>
-			<h1 class="intro__title">Karte</h1>
+			<p class="eyebrow">Browse</p>
+			<h1 class="intro__title">Map</h1>
 			<p class="intro__lead">
-				Alle Beiträge, die einen Ort haben, als Pin. Klick auf einen Pin öffnet
-				den Beitrag.
+				Every post with a place becomes a pin. Click a pin to open the post.
 			</p>
 			<p class="map-count">
 				{pins.length}
-				{pins.length === 1 ? " Ort" : " Orte"}
+				{pins.length === 1 ? " place" : " places"}
 			</p>
 		</div>
 	</header>
@@ -90,22 +89,21 @@ for (const post of readable) {
 				<div class="empty-state">
 					{lockedCount > 0 ? (
 						<p>
-							Die Karte ist für Mitglieder.{" "}
-							<a href="/login?next=/map">Anmelden</a>, um die Orte zu sehen.
+							The map is for members.{" "}
+							<a href="/login?next=/map">Sign in</a> to see the places.
 						</p>
 					) : (
-						<p>Noch kein Beitrag mit Koordinaten.</p>
+						<p>No post has coordinates yet.</p>
 					)}
 					{withoutLocation.length > 0 && (
 						<p>
-							{withoutLocation.length} Beiträge haben noch keinen Ort — trag
-							Breiten- und Längengrad im Beitragseditor ein.
+							{withoutLocation.length} posts have no place yet — add latitude and longitude in the post editor.
 						</p>
 					)}
 				</div>
 			) : (
 				<>
-					<div id="map" class="map" role="application" aria-label="Karte der Beiträge" />
+					<div id="map" class="map" role="application" aria-label="Map of posts" />
 
 					<ul class="places">
 						{pins.map((pin) => (

@@ -27,7 +27,7 @@ export interface Post {
   featured_image?: { id: string; src?: string; alt?: string; caption?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; caption?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } };
   content?: PortableTextBlock[];
   excerpt?: string;
-  groups?: ("oeffentlich" | "alle" | "familie" | "freunde" | "privat")[];
+  groups?: ("public" | "all" | "family" | "friends" | "private")[];
   place?: string;
   latitude?: number;
   longitude?: number;

@@ -31,7 +31,7 @@ export function MembersPage() {
 				const body = (await response.json()) as { members: Member[] };
 				setMembers(body.members);
 			})
-			.catch(() => setError("Mitglieder konnten nicht geladen werden."));
+			.catch(() => setError("Could not load members."));
 	}, []);
 
 	async function save(member: Member, groups: GroupId[]) {
@@ -50,7 +50,7 @@ export function MembersPage() {
 				) ?? null,
 			);
 		} catch {
-			setError("Speichern fehlgeschlagen.");
+			setError("Saving failed.");
 		} finally {
 			setSaving(null);
 		}
@@ -64,22 +64,22 @@ export function MembersPage() {
 	}
 
 	if (!members) {
-		return <p>{error ?? "Lädt …"}</p>;
+		return <p>{error ?? "Loading…"}</p>;
 	}
 
 	return (
 		<div style={{ display: "grid", gap: "1rem", maxWidth: "44rem" }}>
 			<div>
-				<h2 style={{ margin: 0, fontSize: "1.125rem" }}>Mitglieder</h2>
+				<h2 style={{ margin: 0, fontSize: "1.125rem" }}>Members</h2>
 				<p style={{ margin: "0.25rem 0 0", opacity: 0.7, fontSize: "0.875rem" }}>
-					Gruppen bestimmen, welche Beiträge ein Konto lesen darf.
+					Groups decide which posts an account may read.
 				</p>
 			</div>
 
 			{error && <p style={{ color: "crimson" }}>{error}</p>}
 
 			{members.length === 0 ? (
-				<p>Noch keine Konten vorhanden.</p>
+				<p>No accounts yet.</p>
 			) : (
 				<ul style={{ display: "grid", gap: "0.75rem", listStyle: "none", margin: 0, padding: 0 }}>
 					{members.map((member) => (
@@ -97,7 +97,7 @@ export function MembersPage() {
 									<div style={{ fontSize: "0.8125rem", opacity: 0.7 }}>{member.email}</div>
 								</div>
 								<span style={{ fontSize: "0.8125rem", opacity: 0.7 }}>
-									{member.role >= 50 ? "Admin" : "Mitglied"}
+									{member.role >= 50 ? "Admin" : "Member"}
 								</span>
 							</div>
 

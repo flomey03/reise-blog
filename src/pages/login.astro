@@ -7,19 +7,18 @@ import "../styles/auth.css";
 export const prerender = false;
 
 const user = Astro.locals.user;
-const linkError = Astro.url.searchParams.get("fehler") === "link";
+const linkError = Astro.url.searchParams.get("error") === "link";
 const next = Astro.url.searchParams.get("next");
 const admin = isAdmin(Astro.locals);
 ---
 
-<Base title="Anmelden" description="Melde dich an, um alle Beiträge zu lesen.">
+<Base title="Sign in" description="Sign in to read every post.">
 	<header class="band intro">
 		<div class="frame">
-			<p class="eyebrow">Mitgliederbereich</p>
-			<h1 class="intro__title">Anmelden</h1>
+			<p class="eyebrow">Members</p>
+			<h1 class="intro__title">Sign in</h1>
 			<p class="intro__lead">
-				Wir schicken dir einen Anmelde-Link per E-Mail. Ein Passwort brauchst du
-				nicht.
+				We email you a sign-in link. No password needed.
 			</p>
 		</div>
 	</header>
@@ -31,16 +30,16 @@ const admin = isAdmin(Astro.locals);
 					{
 						user ? (
 							<>
-								<p class="eyebrow">Angemeldet</p>
+								<p class="eyebrow">Signed in</p>
 								<p class="auth-text">
-									Du bist als <strong>{user.email}</strong> angemeldet.
+									You are signed in as <strong>{user.email}</strong>.
 								</p>
 								<div class="auth-actions">
-									<a class="btn" href="/">Weiter zur Startseite</a>
-									{admin && <a class="auth-admin-link" href="/members">Mitglieder verwalten</a>}
+									<a class="btn" href="/">Back to the site</a>
+									{admin && <a class="auth-admin-link" href="/members">Manage members</a>}
 								</div>
 								<form method="post" action="/api/logout" class="auth-logout">
-									<button class="btn btn--ghost" type="submit">Abmelden</button>
+									<button class="btn btn--ghost" type="submit">Sign out</button>
 								</form>
 							</>
 						) : (
@@ -48,23 +47,21 @@ const admin = isAdmin(Astro.locals);
 								{
 									next && (
 										<p class="auth-feedback">
-											Dieser Bereich ist für Mitglieder. Melde dich an, um
-											weiterzumachen.
+											This area is for members. Sign in to continue.
 										</p>
 									)
 								}
 								{
 									linkError && (
 										<p class="auth-feedback" data-state="error" role="alert">
-											Der Link ist abgelaufen oder wurde schon benutzt. Fordere
-											bitte einen neuen an.
+											This link has expired or was already used. Request a new one.
 										</p>
 									)
 								}
 								<AuthForm
 									endpoint="/api/login"
-									buttonLabel="Anmelde-Link schicken"
-									successMessage="Wenn ein Konto mit dieser Adresse existiert, ist der Anmelde-Link unterwegs. Schau in dein Postfach."
+									buttonLabel="Send sign-in link"
+									successMessage="If an account exists for that address, the link is on its way. Check your inbox."
 									next={next}
 								/>
 							</>
@@ -76,11 +73,11 @@ const admin = isAdmin(Astro.locals);
 					!user && (
 						<div class="auth-alt">
 							<p>
-								Noch kein Konto? <a href="/signup">Konto anlegen</a>
+								No account yet? <a href="/signup">Create one</a>
 							</p>
 							<p class="auth-hint">
-								Du hast auf diesem Gerät einen Passkey eingerichtet?
-								<a href="/_emdash/admin/login">Stattdessen mit Passkey anmelden</a>
+								Set up a passkey on this device?
+								<a href="/_emdash/admin/login">Sign in with a passkey instead</a>
 							</p>
 						</div>
 					)

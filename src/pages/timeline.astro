@@ -62,8 +62,8 @@ const tracks: Track[] = categoriesResult.data.map((term) => ({
 }));
 
 const uncategorised: Track = {
-	slug: "ohne-kategorie",
-	label: "Ohne Kategorie",
+	slug: "uncategorised",
+	label: "Uncategorised",
 	posts: [],
 };
 
@@ -102,18 +102,18 @@ const lockedPosts = allPosts.length - posts.length;
 
 <Base
 	title="Timeline"
-	description="Alle Beiträge in zeitlicher Reihenfolge, nach Kategorie gruppiert."
+	description="Every post in chronological order, grouped by category."
 >
 	<header class="band intro">
 		<div class="frame">
-			<p class="eyebrow">Reiseverlauf</p>
+			<p class="eyebrow">Journey</p>
 			<h1 class="intro__title">Timeline</h1>
 			<p class="intro__lead">
-				Alle Beiträge in zeitlicher Reihenfolge, nach Kategorie gruppiert.
+				Every post in chronological order, grouped by category.
 			</p>
 			<p class="timeline-count">
 				{totalPosts}
-				{totalPosts === 1 ? " Beitrag" : " Beiträge"}
+				{totalPosts === 1 ? " post" : " posts"}
 			</p>
 		</div>
 	</header>
@@ -125,11 +125,11 @@ const lockedPosts = allPosts.length - posts.length;
 					<div class="empty-state">
 						{lockedPosts > 0 ? (
 							<p>
-								Der Reiseverlauf ist für Mitglieder.{" "}
-								<a href="/login?next=/timeline">Anmelden</a>, um ihn zu sehen.
+								The timeline is for members.{" "}
+								<a href="/login?next=/timeline">Sign in</a> to see it.
 							</p>
 						) : (
-							<p>Noch keine Beiträge vorhanden.</p>
+							<p>No posts yet.</p>
 						)}
 					</div>
 				) : (
@@ -140,7 +140,7 @@ const lockedPosts = allPosts.length - posts.length;
 									{track.label}
 								</h2>
 								<a class="arrow-link" href={`/category/${track.slug}`}>
-									Nur diese Kategorie
+									Only this category
 								</a>
 							</div>
 

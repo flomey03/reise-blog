@@ -37,10 +37,10 @@ export function memberGroups(locals: App.Locals): GroupId[] {
 /**
  * Whether the current visitor may read a post.
  *
- * - A post without groups, or with "oeffentlich", is public.
+ * - A post without groups, or with "public", is public.
  * - Editors and admins always see everything.
  * - Otherwise the visitor has to be signed in, and either the post is for
- *   everyone ("alle") or the visitor's groups overlap the post's groups.
+ *   everyone ("all") or the visitor's groups overlap the post's groups.
  */
 export function canReadPost(
 	locals: App.Locals,
@@ -48,10 +48,10 @@ export function canReadPost(
 ): boolean {
 	const groups = parseGroups(postGroups);
 	if (groups.length === 0) return true;
-	if (groups.includes("oeffentlich")) return true;
+	if (groups.includes("public")) return true;
 	if (isAdmin(locals)) return true;
 	if (!isMember(locals)) return false;
-	if (groups.includes("alle")) return true;
+	if (groups.includes("all")) return true;
 	return sharesGroup(memberGroups(locals), groups);
 }
 

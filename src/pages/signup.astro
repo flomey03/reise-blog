@@ -6,14 +6,13 @@ import "../styles/auth.css";
 export const prerender = false;
 ---
 
-<Base title="Konto anlegen" description="Registriere dich, um alle Beiträge zu lesen.">
+<Base title="Create account" description="Create an account to read every post.">
 	<header class="band intro">
 		<div class="frame">
-			<p class="eyebrow">Mitgliederbereich</p>
-			<h1 class="intro__title">Konto anlegen</h1>
+			<p class="eyebrow">Members</p>
+			<h1 class="intro__title">Create account</h1>
 			<p class="intro__lead">
-				Trag deine E-Mail-Adresse ein. Wir schicken dir einen Link, mit dem du
-				dich anmeldest — ein Passwort brauchst du nicht.
+				Enter your email address and we send you a link to sign in — no password needed.
 			</p>
 		</div>
 	</header>
@@ -24,13 +23,13 @@ export const prerender = false;
 				<div class="auth-card">
 					<AuthForm
 						endpoint="/api/signup"
-						buttonLabel="Link anfordern"
-						successMessage="Wenn deine Adresse zugelassen ist, ist der Link unterwegs. Schau in dein Postfach (auch im Spam-Ordner)."
+						buttonLabel="Request link"
+						successMessage="If your address is allowed, the link is on its way. Check your inbox (and spam folder)."
 					/>
 				</div>
 
 				<div class="auth-alt">
-					<p>Schon registriert? <a href="/login">Hier anmelden</a></p>
+					<p>Already registered? <a href="/login">Sign in</a></p>
 				</div>
 			</div>
 		</div>

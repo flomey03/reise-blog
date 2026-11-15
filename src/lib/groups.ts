@@ -3,20 +3,14 @@
  *
  * EmDash knows role levels (10 subscriber … 50 admin), but a blog needs a
  * second, orthogonal axis: who may read a post. Groups are that axis. The list
- * lives here and nowhere else — the admin UI, the post field and the access
- * checks all read it from this module.
+ * lives here and nowhere else — admin UI, post field and access checks all
+ * read it from this module.
  *
  * The ids double as the values of the `groups` multi-select field on posts and
- * the labels an editor sees there, which is why they are German.
+ * as the labels an editor sees there, so keep them short and readable.
  */
 
-export const GROUP_IDS = [
-	"oeffentlich",
-	"alle",
-	"familie",
-	"freunde",
-	"privat",
-] as const;
+export const GROUP_IDS = ["public", "all", "family", "friends", "private"] as const;
 
 export type GroupId = (typeof GROUP_IDS)[number];
 
@@ -27,19 +21,15 @@ export interface Group {
 }
 
 export const GROUPS: readonly Group[] = [
-	{
-		id: "oeffentlich",
-		label: "Öffentlich",
-		hint: "Auch ohne Anmeldung sichtbar",
-	},
-	{ id: "alle", label: "Alle", hint: "Jeder angemeldete Leser" },
-	{ id: "familie", label: "Familie", hint: "Nur Familie" },
-	{ id: "freunde", label: "Freunde", hint: "Nur Freunde" },
-	{ id: "privat", label: "Privat", hint: "Nur ausgewählte Personen" },
+	{ id: "public", label: "Public", hint: "Visible without signing in" },
+	{ id: "all", label: "All members", hint: "Every signed-in reader" },
+	{ id: "family", label: "Family", hint: "Family only" },
+	{ id: "friends", label: "Friends", hint: "Friends only" },
+	{ id: "private", label: "Private", hint: "Selected people only" },
 ];
 
 /** New posts start as members-only; clear the field to make one public. */
-export const DEFAULT_POST_GROUPS: GroupId[] = ["alle"];
+export const DEFAULT_POST_GROUPS: GroupId[] = ["all"];
 
 const KNOWN_GROUPS = new Set<string>(GROUP_IDS);
 

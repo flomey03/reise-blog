@@ -27,7 +27,7 @@ export const POST: APIRoute = async ({ request, session, redirect }) => {
 		return null;
 	});
 
-	if (!user) return redirect("/login?fehler=link", 303);
+	if (!user) return redirect("/login?error=link", 303);
 
 	session.set("user", { id: user.id });
 

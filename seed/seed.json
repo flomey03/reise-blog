@@ -44,26 +44,26 @@
 				},
 				{
 					"slug": "groups",
-					"label": "Sichtbar für",
+					"label": "Visible to",
 					"type": "multiSelect",
 					"validation": {
-						"options": ["oeffentlich", "alle", "familie", "freunde", "privat"]
+						"options": ["public", "all", "family", "friends", "private"]
 					},
-					"defaultValue": ["alle"]
+					"defaultValue": ["all"]
 				},
 				{
 					"slug": "place",
-					"label": "Ort",
+					"label": "Place",
 					"type": "string"
 				},
 				{
 					"slug": "latitude",
-					"label": "Breitengrad",
+					"label": "Latitude",
 					"type": "number"
 				},
 				{
 					"slug": "longitude",
-					"label": "Längengrad",
+					"label": "Longitude",
 					"type": "number"
 				}
 			]
@@ -159,7 +159,7 @@
 			"items": [
 				{
 					"type": "custom",
-					"label": "Start",
+					"label": "Home",
 					"url": "/"
 				},
 				{
@@ -169,12 +169,12 @@
 				},
 				{
 					"type": "custom",
-					"label": "Karte",
+					"label": "Map",
 					"url": "/map"
 				},
 				{
 					"type": "custom",
-					"label": "Kategorien",
+					"label": "Categories",
 					"url": "/categories"
 				}
 			]

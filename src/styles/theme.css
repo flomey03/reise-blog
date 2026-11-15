@@ -11,24 +11,35 @@
   changes light and dark mode at once; use light-dark(<light>, <dark>)
   to set different values per mode.
 
-  Set the three brand tokens together, as in the example below:
-  --color-on-brand defaults to near-black in dark mode.
-
   Webfonts are loaded in astro.config.mjs (--font-body, --font-mono).
-  Swap the loaded font there; use overrides here for system fonts or a
-  separate heading face.
-
-  Example:
-
-  :root {
-    --color-brand: light-dark(#0f766e, #2dd4bf);
-    --color-brand-hover: light-dark(#115e59, #5eead4);
-    --color-on-brand: light-dark(#ffffff, #0a0a0a);
-    --font-heading: "Iowan Old Style", Georgia, serif;
-    --radius-lg: 18px;
-    --radius-xl: 24px;
-  }
 */
 
+/*
+  Dark mode: anthracite instead of near-black.
+
+  The default dark palette sits on #0a0a0a, which reads as "black" on most
+  screens. These overrides lift the whole scale to a warm-neutral anthracite
+  (#1e2124 canvas) and keep the same contrast steps, so surfaces, hairlines and
+  text still separate the way the layout expects. Light mode is untouched.
+*/
 :root {
+	--color-bg: light-dark(#fafafa, #1e2124);
+	--color-surface: light-dark(#ffffff, #262a2e);
+	--color-fill: light-dark(#f2f2f2, #2d3238);
+	--color-fill-strong: light-dark(#e8e8e8, #353b42);
+
+	--color-text: light-dark(#171717, #e9eaeb);
+	--color-text-secondary: light-dark(#525252, #b3b8bd);
+	--color-muted: light-dark(#6b6b6b, #90969c);
+
+	--color-border: light-dark(#e5e5e5, #363b41);
+	--color-border-subtle: light-dark(#efefef, #2f343a);
+	--color-border-strong: light-dark(#d4d4d4, #474d55);
+
+	--color-ring: light-dark(rgb(0 0 0 / 0.07), rgb(255 255 255 / 0.08));
+	--color-media-outline: light-dark(rgb(0 0 0 / 0.1), rgb(255 255 255 / 0.09));
+
+	/* Softer shadows: against anthracite, heavy black shadows look muddy. */
+	--color-shadow: light-dark(rgb(0 0 0 / 0.06), rgb(0 0 0 / 0.32));
+	--color-shadow-strong: light-dark(rgb(0 0 0 / 0.12), rgb(0 0 0 / 0.5));
 }

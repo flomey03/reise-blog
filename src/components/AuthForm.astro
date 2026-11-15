@@ -22,12 +22,12 @@ const { endpoint, buttonLabel, successMessage, next } = Astro.props;
 	data-endpoint={endpoint}
 	data-success={successMessage}
 	data-next={next ?? ""}
-	data-empty="Bitte gib eine E-Mail-Adresse ein."
-	data-error="Das hat gerade nicht geklappt. Bitte versuche es später noch einmal."
+	data-empty="Enter an email address."
+	data-error="That did not work. Please try again in a moment."
 	novalidate
 >
 	<div class="field">
-		<label for="auth-email">E-Mail-Adresse</label>
+		<label for="auth-email">Email address</label>
 		<input
 			id="auth-email"
 			name="email"
@@ -35,7 +35,7 @@ const { endpoint, buttonLabel, successMessage, next } = Astro.props;
 			required
 			autocomplete="email"
 			inputmode="email"
-			placeholder="du@example.com"
+			placeholder="you@example.com"
 		/>
 	</div>
 
