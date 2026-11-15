@@ -16,8 +16,10 @@ services:
       dockerfile: Dockerfile
     image: reise-blog:latest
     restart: unless-stopped
+    # Point APP_ENV_FILE at a file outside the repo (e.g. /etc/reise-blog/app.env)
+    # when the checkout should not hold secrets.
     env_file:
-      - .env
+      - ${APP_ENV_FILE:-.env}
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0

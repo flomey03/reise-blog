@@ -37,6 +37,39 @@ docker compose down            # stoppen (Volume bleibt)
 docker compose up -d --build   # nach git pull: neu bauen und starten
 ```
 
+## Schlüssel (`EMDASH_ENCRYPTION_KEY`)
+
+Der Schlüssel verschlüsselt Plugin-Secrets und das SMTP-Passwort **in der
+Datenbank**. Er gehört nicht ins Image und nicht ins Repo: Image-Layer sind für
+jeden lesbar, der das Image hat, und jede Umgebung bekäme denselben Schlüssel.
+
+Einmalig auf dem Server erzeugen:
+
+```bash
+npx emdash secrets generate --write=.env
+```
+
+Das erzeugt `emdash_enc_v1_<43 Zeichen>` — das Format ist nicht optional,
+`openssl rand` allein passt nicht. Die Datei bleibt in `.gitignore`; wenn sie
+nicht im Checkout liegen soll, zeigt `APP_ENV_FILE` darauf:
+
+```bash
+sudo install -d -m 700 /etc/reise-blog
+sudo npx emdash secrets generate --write=/etc/reise-blog/app.env
+sudo chmod 600 /etc/reise-blog/app.env
+APP_ENV_FILE=/etc/reise-blog/app.env docker compose up -d
+```
+
+**Verlieren heißt verlieren.** Ohne den Schlüssel bleiben die verschlüsselten
+Werte unlesbar (SMTP-Passwort, Plugin-Einstellungen) — die Seite läuft weiter,
+aber diese Werte musst du neu eintragen. Deshalb: in den Passwortmanager und in
+jedes Backup.
+
+**Rotation** ist vorbereitet: `EMDASH_ENCRYPTION_KEY` darf eine
+kommagetrennte Liste sein. Der erste Schlüssel verschlüsselt Neues, alle
+gelisteten entschlüsseln weiter — alten Schlüssel erst entfernen, wenn alles neu
+geschrieben ist.
+
 ## Backup (extern)
 
 Das Volume heißt `reise-blog_data`. Sichern ist ein Host-Job, kein Repo-Job:
