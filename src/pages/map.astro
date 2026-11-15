@@ -1,0 +1,310 @@
+---
+import { getEmDashCollection } from "emdash";
+import Base from "../layouts/Base.astro";
+import { formatDate } from "../utils/locale";
+import { canReadPost } from "../lib/members";
+
+export const prerender = false;
+
+/**
+ * Map overview: every readable post that carries coordinates becomes a pin.
+ * Posts without a location are skipped (and listed so the gap is visible).
+ */
+
+const MAX_POSTS = 200;
+
+const { entries: allPosts, cacheHint } = await getEmDashCollection("posts", {
+	orderBy: { published_at: "desc" },
+	limit: MAX_POSTS,
+});
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+interface Pin {
+	id: string;
+	title: string;
+	url: string;
+	place: string | null;
+	date: string | null;
+	lat: number;
+	lng: number;
+}
+
+const readable = allPosts.filter((post) =>
+	canReadPost(Astro.locals, post.data.groups),
+);
+const lockedCount = allPosts.length - readable.length;
+
+const pins: Pin[] = [];
+const withoutLocation: Array<{ id: string; title: string }> = [];
+
+for (const post of readable) {
+	const lat = Number(post.data.latitude);
+	const lng = Number(post.data.longitude);
+	const valid =
+		Number.isFinite(lat) &&
+		Number.isFinite(lng) &&
+		Math.abs(lat) <= 90 &&
+		Math.abs(lng) <= 180 &&
+		// 0/0 is the Atlantic, almost always an empty field rather than a place
+		!(lat === 0 && lng === 0);
+
+	if (!valid) {
+		withoutLocation.push({ id: post.id, title: post.data.title });
+		continue;
+	}
+
+	pins.push({
+		id: post.id,
+		title: post.data.title,
+		url: `/posts/${post.id}`,
+		place: post.data.place ?? null,
+		date: post.data.publishedAt ? formatDate(post.data.publishedAt, "short") : null,
+		lat,
+		lng,
+	});
+}
+---
+
+<Base
+	title="Karte"
+	description="Alle Beiträge mit Koordinaten auf einer Karte."
+>
+	<header class="band intro">
+		<div class="frame">
+			<p class="eyebrow">Übersicht</p>
+			<h1 class="intro__title">Karte</h1>
+			<p class="intro__lead">
+				Alle Beiträge, die einen Ort haben, als Pin. Klick auf einen Pin öffnet
+				den Beitrag.
+			</p>
+			<p class="map-count">
+				{pins.length}
+				{pins.length === 1 ? " Ort" : " Orte"}
+			</p>
+		</div>
+	</header>
+
+	<section class="band section">
+		<div class="frame">
+			{pins.length === 0 ? (
+				<div class="empty-state">
+					{lockedCount > 0 ? (
+						<p>
+							Die Karte ist für Mitglieder.{" "}
+							<a href="/login?next=/map">Anmelden</a>, um die Orte zu sehen.
+						</p>
+					) : (
+						<p>Noch kein Beitrag mit Koordinaten.</p>
+					)}
+					{withoutLocation.length > 0 && (
+						<p>
+							{withoutLocation.length} Beiträge haben noch keinen Ort — trag
+							Breiten- und Längengrad im Beitragseditor ein.
+						</p>
+					)}
+				</div>
+			) : (
+				<>
+					<div id="map" class="map" role="application" aria-label="Karte der Beiträge" />
+
+					<ul class="places">
+						{pins.map((pin) => (
+							<li class="places__item">
+								<a href={pin.url}>{pin.title}</a>
+								<span class="places__meta">
+									{pin.place && <span>{pin.place}</span>}
+									{pin.date && <span>{pin.date}</span>}
+								</span>
+							</li>
+						))}
+					</ul>
+				</>
+			)}
+		</div>
+	</section>
+</Base>
+
+<script type="application/json" id="map-pins" set:html={JSON.stringify(pins)} />
+
+<script>
+	import L from "leaflet";
+	import "leaflet/dist/leaflet.css";
+
+	interface Pin {
+		id: string;
+		title: string;
+		url: string;
+		place: string | null;
+		date: string | null;
+		lat: number;
+		lng: number;
+	}
+
+	const container = document.getElementById("map");
+	const data = document.getElementById("map-pins");
+	if (!container || !data) {
+		// nothing to do
+	} else {
+		const pins = JSON.parse(data.textContent ?? "[]") as Pin[];
+
+		const map = L.map(container, {
+			scrollWheelZoom: false,
+			worldCopyJump: true,
+		});
+
+		L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+			maxZoom: 18,
+			attribution:
+				'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+		}).addTo(map);
+
+		const icon = L.divIcon({
+			className: "map-pin",
+			html: "<span></span>",
+			iconSize: [18, 18],
+			iconAnchor: [9, 9],
+			popupAnchor: [0, -10],
+		});
+
+		const bounds = L.latLngBounds([]);
+
+		for (const pin of pins) {
+			const popup = document.createElement("div");
+			popup.className = "map-popup";
+
+			const link = document.createElement("a");
+			link.href = pin.url;
+			link.textContent = pin.title;
+			link.className = "map-popup__title";
+			popup.append(link);
+
+			for (const value of [pin.place, pin.date]) {
+				if (!value) continue;
+				const line = document.createElement("div");
+				line.className = "map-popup__meta";
+				line.textContent = value;
+				popup.append(line);
+			}
+
+			L.marker([pin.lat, pin.lng], { icon, title: pin.title })
+				.addTo(map)
+				.bindPopup(popup);
+			bounds.extend([pin.lat, pin.lng]);
+		}
+
+		if (pins.length === 1) {
+			map.setView([pins[0].lat, pins[0].lng], 8);
+		} else {
+			map.fitBounds(bounds, { padding: [40, 40] });
+		}
+
+		// Tiles need a nudge when the container size settles after hydration
+		setTimeout(() => map.invalidateSize(), 0);
+	}
+</script>
+
+<style>
+	.map-count {
+		margin-top: var(--spacing-4);
+		font-family: var(--font-mono);
+		font-size: var(--font-size-label);
+		letter-spacing: var(--tracking-wider);
+		text-transform: uppercase;
+		color: var(--color-muted);
+	}
+
+	.map {
+		height: clamp(420px, 68vh, 720px);
+		border-radius: var(--radius-xl);
+		box-shadow: var(--shadow-card);
+		overflow: hidden;
+		background: var(--color-fill);
+	}
+
+	.places {
+		display: grid;
+		gap: var(--spacing-2);
+		margin-top: var(--spacing-8);
+		list-style: none;
+		padding: 0;
+	}
+
+	.places__item {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: var(--spacing-2);
+		padding-block: var(--spacing-2);
+		border-bottom: 1px solid var(--color-border-subtle);
+		font-size: var(--font-size-sm);
+	}
+
+	.places__item a {
+		color: var(--color-text);
+		text-decoration-line: underline;
+		text-decoration-color: transparent;
+		transition: text-decoration-color var(--transition-fast);
+	}
+
+	.places__item a:hover {
+		text-decoration-color: currentColor;
+	}
+
+	.places__meta {
+		display: flex;
+		gap: var(--spacing-3);
+		color: var(--color-muted);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.empty-state {
+		display: grid;
+		gap: var(--spacing-2);
+		color: var(--color-muted);
+	}
+</style>
+
+<style is:global>
+	/* Leaflet builds its own DOM, so these rules cannot be scoped. */
+	.map-pin span {
+		display: block;
+		width: 18px;
+		height: 18px;
+		border-radius: 999px;
+		background: var(--color-brand);
+		box-shadow:
+			0 0 0 3px var(--color-surface),
+			var(--shadow-sm);
+	}
+
+	.map-popup {
+		display: grid;
+		gap: 2px;
+		min-width: 10rem;
+	}
+
+	.map-popup__title {
+		font-weight: 600;
+		color: var(--color-text);
+	}
+
+	.map-popup__meta {
+		font-size: var(--font-size-xs);
+		color: var(--color-muted);
+	}
+
+	.leaflet-container {
+		font-family: var(--font-body);
+		background: var(--color-fill);
+	}
+
+	.leaflet-popup-content-wrapper {
+		border-radius: var(--radius);
+		box-shadow: var(--shadow-card);
+	}
+
+	.leaflet-control-attribution {
+		font-size: 10px;
+	}
+</style>

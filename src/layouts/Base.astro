@@ -11,6 +11,7 @@ import LiveSearch from "emdash/ui/search";
 import { Font } from "astro:assets";
 import { getSiteLocale } from "../utils/locale";
 import { resolveBlogSiteIdentity } from "../utils/site-identity";
+import { ADMIN_PANEL_MIN_ROLE, currentRole } from "../lib/members";
 import "../styles/tokens.css";
 import "../styles/theme.css";
 
@@ -80,8 +81,9 @@ const pageCtx = createPublicPageContext({
 	siteName: siteTitle,
 });
 
-// Check if user is logged in (for showing admin link)
+// Check if user is logged in (for the account controls in the header)
 const isLoggedIn = !!Astro.locals.user;
+const mayUseAdmin = currentRole(Astro.locals) >= ADMIN_PANEL_MIN_ROLE;
 
 const TRAILING_SLASH = /\/$/;
 const currentPath = Astro.url.pathname.replace(TRAILING_SLASH, "") || "/";
@@ -229,9 +231,22 @@ const year = new Date().getFullYear();
 						>
 					</a>
 					{
-						isLoggedIn && (
-							<a href="/_emdash/admin" class="btn btn--ghost btn--sm nav-admin">
-								Admin
+						isLoggedIn ? (
+							<div class="nav-account">
+								{mayUseAdmin && (
+									<a href="/_emdash/admin" class="btn btn--ghost btn--sm">
+										Admin
+									</a>
+								)}
+								<form method="post" action="/api/logout" class="nav-logout">
+									<button class="btn btn--ghost btn--sm" type="submit">
+										Abmelden
+									</button>
+								</form>
+							</div>
+						) : (
+							<a href="/login" class="btn btn--ghost btn--sm nav-login">
+								Anmelden
 							</a>
 						)
 					}
@@ -1130,6 +1145,20 @@ const year = new Date().getFullYear();
 				align-items: center;
 				gap: var(--spacing-2);
 				margin-inline-start: auto;
+			}
+
+			.nav-account {
+				display: flex;
+				align-items: center;
+				gap: var(--spacing-2);
+			}
+
+			.nav-logout {
+				display: contents;
+			}
+
+			.nav-logout button {
+				font-family: inherit;
 			}
 
 			.site-search {

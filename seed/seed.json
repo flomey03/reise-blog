@@ -50,6 +50,21 @@
 						"options": ["oeffentlich", "alle", "familie", "freunde", "privat"]
 					},
 					"defaultValue": ["alle"]
+				},
+				{
+					"slug": "place",
+					"label": "Ort",
+					"type": "string"
+				},
+				{
+					"slug": "latitude",
+					"label": "Breitengrad",
+					"type": "number"
+				},
+				{
+					"slug": "longitude",
+					"label": "Längengrad",
+					"type": "number"
 				}
 			]
 		},

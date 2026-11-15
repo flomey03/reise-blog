@@ -40,6 +40,17 @@
 	font-size: var(--font-size-sm);
 }
 
+.auth-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--spacing-3);
+}
+
+.auth-logout {
+	margin-top: var(--spacing-5);
+}
+
 .auth-form {
 	display: grid;
 	gap: var(--spacing-4);

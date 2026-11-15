@@ -1,0 +1,390 @@
+---
+import {
+	getEmDashCollection,
+	getTaxonomyTermsWithCacheHint,
+	getTermsForEntries,
+} from "emdash";
+import { Image } from "emdash/ui";
+import Base from "../layouts/Base.astro";
+import { formatDate } from "../utils/locale";
+import { formatReadingTime, getReadingTime } from "../utils/reading-time";
+import { canReadPost } from "../lib/members";
+
+export const prerender = false;
+
+/**
+ * Timeline: every post this visitor may read, oldest first, grouped by the
+ * `category` taxonomy. A post with several categories appears in each of them.
+ */
+
+const MAX_POSTS = 200;
+
+const [{ entries: allPosts, cacheHint }, categoriesResult] = await Promise.all([
+	getEmDashCollection("posts", {
+		orderBy: { published_at: "asc" },
+		limit: MAX_POSTS,
+	}),
+	getTaxonomyTermsWithCacheHint("category", { includeCounts: false }),
+]);
+
+if (Astro.cache?.enabled) {
+	Astro.cache.set(cacheHint);
+	Astro.cache.set(categoriesResult.cacheHint);
+}
+
+const posts = allPosts.filter((post) =>
+	canReadPost(Astro.locals, post.data.groups),
+);
+
+const categoriesByEntry = await getTermsForEntries(
+	"posts",
+	posts.map((post) => post.data.id),
+	"category",
+);
+
+interface Track {
+	slug: string;
+	label: string;
+	posts: Array<{
+		post: (typeof posts)[number];
+		year: string;
+		date: string;
+		readingTime: string;
+		image?: NonNullable<(typeof posts)[number]["data"]["featured_image"]>;
+	}>;
+}
+
+/** Taxonomy order first, then posts without a category. */
+const tracks: Track[] = categoriesResult.data.map((term) => ({
+	slug: term.slug,
+	label: term.label,
+	posts: [],
+}));
+
+const uncategorised: Track = {
+	slug: "ohne-kategorie",
+	label: "Ohne Kategorie",
+	posts: [],
+};
+
+function toEntry(post: (typeof posts)[number]) {
+	const publishedAt = post.data.publishedAt;
+	return {
+		post,
+		year: publishedAt ? String(publishedAt.getFullYear()) : "—",
+		date: publishedAt ? formatDate(publishedAt, "short") : "",
+		readingTime: formatReadingTime(getReadingTime(post.data.content)),
+		image: post.data.featured_image ?? undefined,
+	};
+}
+
+for (const post of posts) {
+	const terms = categoriesByEntry.get(post.data.id) ?? [];
+	const entry = toEntry(post);
+
+	if (terms.length === 0) {
+		uncategorised.posts.push(entry);
+		continue;
+	}
+
+	for (const term of terms) {
+		const track = tracks.find((candidate) => candidate.slug === term.slug);
+		if (track) track.posts.push(entry);
+	}
+}
+
+if (uncategorised.posts.length > 0) tracks.push(uncategorised);
+
+const visibleTracks = tracks.filter((track) => track.posts.length > 0);
+const totalPosts = new Set(posts.map((post) => post.data.id)).size;
+const lockedPosts = allPosts.length - posts.length;
+---
+
+<Base
+	title="Timeline"
+	description="Alle Beiträge in zeitlicher Reihenfolge, nach Kategorie gruppiert."
+>
+	<header class="band intro">
+		<div class="frame">
+			<p class="eyebrow">Reiseverlauf</p>
+			<h1 class="intro__title">Timeline</h1>
+			<p class="intro__lead">
+				Alle Beiträge in zeitlicher Reihenfolge, nach Kategorie gruppiert.
+			</p>
+			<p class="timeline-count">
+				{totalPosts}
+				{totalPosts === 1 ? " Beitrag" : " Beiträge"}
+			</p>
+		</div>
+	</header>
+
+	<section class="band section">
+		<div class="frame">
+			{
+				visibleTracks.length === 0 ? (
+					<div class="empty-state">
+						{lockedPosts > 0 ? (
+							<p>
+								Der Reiseverlauf ist für Mitglieder.{" "}
+								<a href="/login?next=/timeline">Anmelden</a>, um ihn zu sehen.
+							</p>
+						) : (
+							<p>Noch keine Beiträge vorhanden.</p>
+						)}
+					</div>
+				) : (
+					visibleTracks.map((track) => (
+						<section class="track" aria-labelledby={`track-${track.slug}`}>
+							<div class="track__head">
+								<h2 id={`track-${track.slug}`} class="track__title">
+									{track.label}
+								</h2>
+								<a class="arrow-link" href={`/category/${track.slug}`}>
+									Nur diese Kategorie
+								</a>
+							</div>
+
+							<ol class="track__list">
+								{track.posts.map(({ post, year, date, readingTime, image }) => (
+									<li class="entry">
+										<div class="entry__when">
+											<span class="entry__year">{year}</span>
+											<span class="entry__date">{date}</span>
+										</div>
+
+										<div class="entry__marker" aria-hidden="true" />
+
+										<article class="entry__card">
+											{image && (
+												<a
+													href={`/posts/${post.id}`}
+													class="entry__media"
+													tabindex="-1"
+													aria-hidden="true"
+												>
+													<Image image={image} sizes="200px" />
+												</a>
+											)}
+
+											<div class="entry__body">
+												<h3 class="entry__title">
+													<a href={`/posts/${post.id}`}>{post.data.title}</a>
+												</h3>
+												{post.data.excerpt && (
+													<p class="entry__excerpt">{post.data.excerpt}</p>
+												)}
+												<p class="entry__meta">
+													{date}
+													<span>{readingTime}</span>
+												</p>
+											</div>
+										</article>
+									</li>
+								))}
+							</ol>
+						</section>
+					))
+				)
+			}
+		</div>
+	</section>
+</Base>
+
+<style>
+	.timeline-count {
+		margin-top: var(--spacing-4);
+		font-family: var(--font-mono);
+		font-size: var(--font-size-label);
+		letter-spacing: var(--tracking-wider);
+		text-transform: uppercase;
+		color: var(--color-muted);
+	}
+
+	.track + .track {
+		margin-top: clamp(3rem, 2rem + 3vw, 5rem);
+	}
+
+	.track__head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: var(--spacing-2);
+		margin-bottom: var(--spacing-6);
+		padding-bottom: var(--spacing-3);
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.track__title {
+		font-size: var(--font-size-2xl);
+	}
+
+	.track__list {
+		display: grid;
+		gap: var(--spacing-6);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	/* Rail: date column, marker, card */
+	.entry {
+		display: grid;
+		grid-template-columns: 4.5rem 1.5rem minmax(0, 1fr);
+		align-items: start;
+		gap: var(--spacing-3);
+	}
+
+	.entry__when {
+		display: grid;
+		gap: 2px;
+		padding-top: 2px;
+		text-align: right;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.entry__year {
+		font-family: var(--font-mono);
+		font-size: var(--font-size-sm);
+		font-weight: 500;
+		color: var(--color-text);
+	}
+
+	.entry__date {
+		font-size: var(--font-size-xs);
+		color: var(--color-muted);
+	}
+
+	.entry__marker {
+		position: relative;
+		align-self: stretch;
+		display: flex;
+		justify-content: center;
+	}
+
+	/* The continuous rail, plus the dot for this entry */
+	.entry__marker::before {
+		content: "";
+		position: absolute;
+		inset-block: 0;
+		width: 1px;
+		background: var(--color-border);
+	}
+
+	.entry__marker::after {
+		content: "";
+		position: relative;
+		margin-top: 6px;
+		width: 9px;
+		height: 9px;
+		border-radius: var(--radius-full);
+		background: var(--color-surface);
+		box-shadow: inset 0 0 0 2px var(--color-brand);
+	}
+
+	.entry:last-child .entry__marker::before {
+		bottom: auto;
+		height: 16px;
+	}
+
+	.entry__card {
+		display: flex;
+		gap: var(--spacing-4);
+		padding: var(--spacing-4);
+		border-radius: var(--radius-xl);
+		background: var(--color-surface);
+		box-shadow: var(--shadow-card);
+	}
+
+	.entry__media {
+		flex: 0 0 auto;
+		width: 7rem;
+		height: 5rem;
+		overflow: hidden;
+		border-radius: var(--radius-lg);
+		background: var(--color-fill);
+	}
+
+	.entry__media :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.entry__body {
+		min-width: 0;
+	}
+
+	.entry__title {
+		font-size: var(--font-size-lg);
+		line-height: var(--leading-snug);
+	}
+
+	.entry__title a {
+		color: var(--color-text);
+		text-decoration-line: underline;
+		text-decoration-color: transparent;
+		transition: text-decoration-color var(--transition-fast);
+	}
+
+	.entry__title a:hover {
+		text-decoration-color: currentColor;
+	}
+
+	.entry__excerpt {
+		margin-top: var(--spacing-2);
+		font-size: var(--font-size-sm);
+		line-height: var(--leading-normal);
+		color: var(--color-text-secondary);
+	}
+
+	.entry__meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--spacing-2);
+		margin-top: var(--spacing-3);
+		font-size: var(--font-size-xs);
+		color: var(--color-muted);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.entry__meta > * + *::before {
+		content: "·";
+		content: "·" / "";
+		margin-inline-end: var(--spacing-2);
+	}
+
+	.empty-state {
+		color: var(--color-muted);
+	}
+
+	@media (max-width: 640px) {
+		.entry {
+			grid-template-columns: 1.5rem minmax(0, 1fr);
+		}
+
+		.entry__when {
+			grid-column: 2;
+			grid-row: 1;
+			text-align: left;
+			display: flex;
+			gap: var(--spacing-2);
+		}
+
+		.entry__marker {
+			grid-column: 1;
+			grid-row: 1 / span 2;
+		}
+
+		.entry__card {
+			grid-column: 2;
+			grid-row: 2;
+			flex-direction: column;
+		}
+
+		.entry__media {
+			width: 100%;
+			height: 9rem;
+		}
+	}
+</style>

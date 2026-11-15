@@ -28,6 +28,9 @@ export interface Post {
   content?: PortableTextBlock[];
   excerpt?: string;
   groups?: ("oeffentlich" | "alle" | "familie" | "freunde" | "privat")[];
+  place?: string;
+  latitude?: number;
+  longitude?: number;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;

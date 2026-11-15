@@ -35,11 +35,24 @@ const admin = isAdmin(Astro.locals);
 								<p class="auth-text">
 									Du bist als <strong>{user.email}</strong> angemeldet.
 								</p>
-								<a class="btn" href="/">Weiter zur Startseite</a>
-								{admin && <a class="auth-admin-link" href="/members">Mitglieder verwalten</a>}
+								<div class="auth-actions">
+									<a class="btn" href="/">Weiter zur Startseite</a>
+									{admin && <a class="auth-admin-link" href="/members">Mitglieder verwalten</a>}
+								</div>
+								<form method="post" action="/api/logout" class="auth-logout">
+									<button class="btn btn--ghost" type="submit">Abmelden</button>
+								</form>
 							</>
 						) : (
 							<>
+								{
+									next && (
+										<p class="auth-feedback">
+											Dieser Bereich ist für Mitglieder. Melde dich an, um
+											weiterzumachen.
+										</p>
+									)
+								}
 								{
 									linkError && (
 										<p class="auth-feedback" data-state="error" role="alert">
