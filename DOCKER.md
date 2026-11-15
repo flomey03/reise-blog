@@ -21,12 +21,20 @@ cp .env.example .env        # einmalig, Key eintragen
 docker compose up -d --build
 ```
 
-Danach: <http://localhost:4321>. Beim ersten Start ist die Datenbank leer, das
-Setup-Wizard unter `/_emdash/admin` legt Titel, Admin-Konto und Inhalt an.
+Danach: <http://localhost:4321>. Beim ersten Start ist die Datenbank leer; das
+Setup-Wizard unter `/_emdash/admin` fragt **Titel, Untertitel, Admin-Konto und
+Beispielinhalte** ab. Im Seed ist bewusst nichts davon vorbelegt.
 
-`EMDASH_ENCRYPTION_KEY` in `.env` verschlüsselt Plugin-Secrets und das
-SMTP-Passwort in der Datenbank. **Den Key zusammen mit den Backups aufbewahren** —
-ohne ihn sind gespeicherte Secrets nicht mehr lesbar.
+**Vor dem ersten Start die Site-URL setzen.** Im Production-Build verweigert
+das Setup ohne kanonische Origin (Passkeys und E-Mail-Links brauchen sie):
+
+```bash
+# .env
+EMDASH_SITE_URL=https://deine-domain.example
+```
+
+Ohne Eintrag fällt Compose auf `http://localhost:4321` zurück — gut zum
+Ausprobieren, aber Anmelde-Links zeigen dann auf localhost.
 
 ## Alltag
 

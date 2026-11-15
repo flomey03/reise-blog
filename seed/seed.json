@@ -6,10 +6,7 @@
 		"description": "A blog with posts and pages",
 		"author": "EmDash"
 	},
-	"settings": {
-		"title": "Wir kommen nie wieder",
-		"tagline": "außer vielleicht"
-	},
+	"settings": {},
 	"collections": [
 		{
 			"slug": "posts",
