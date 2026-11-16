@@ -13,6 +13,8 @@ services:
   emdash:
     build: .
     restart: unless-stopped
+    env_file:
+      - docker.env
     ports:
       - "4321:4321"
     volumes:

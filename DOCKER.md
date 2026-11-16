@@ -25,15 +25,17 @@ Danach: <http://localhost:4321>. Beim ersten Start ist die Datenbank leer; das
 Setup-Wizard unter `/_emdash/admin` fragt **Titel, Untertitel, Admin-Konto und
 Beispielinhalte** ab. Im Seed ist bewusst nichts davon vorbelegt.
 
-**Vor dem ersten Start die Site-URL setzen.** Im Production-Build verweigert
-das Setup ohne kanonische Origin (Passkeys und E-Mail-Links brauchen sie):
+**Vor dem ersten Start `BASE_DOMAIN` setzen.** Die Site-URL steht in der
+committeten `docker.env` und wird beim Start aus `BASE_DOMAIN` gebildet:
 
 ```bash
-EMDASH_SITE_URL=https://deine-domain.example docker compose up -d --build
+BASE_DOMAIN=deine-domain.example docker compose up -d --build
 ```
 
-Ohne Eintrag fällt Compose auf `http://localhost:4321` zurück — gut zum
-Ausprobieren, aber Anmelde-Links zeigen dann auf localhost.
+Daraus wird `EMDASH_SITE_URL=https://wirkommenniewieder.deine-domain.example`.
+Im Production-Build verweigert das Setup ohne kanonische Origin (Passkeys und
+E-Mail-Links brauchen sie). Fehlt `BASE_DOMAIN`, bricht Compose mit einer
+klaren Fehlermeldung ab, statt eine kaputte URL zu erzeugen.
 
 ## Alltag
 
