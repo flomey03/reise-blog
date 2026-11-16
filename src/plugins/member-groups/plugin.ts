@@ -21,27 +21,32 @@ export function createPlugin() {
 		},
 		routes: {
 			members: definePluginRoute({
-				methods: ["GET", "POST"],
+				methods: ["GET"],
 				permission: "users:manage",
-				handler: async (ctx) => {
-					if (ctx.request.method === "POST") {
-						const input = (ctx.input ?? {}) as {
-							userId?: string;
-							groups?: unknown;
-						};
-						if (!input.userId) return { ok: false };
-						const ok = await setMemberGroups(
-							input.userId,
-							parseGroups(input.groups),
-						);
-						return { ok };
-					}
-
+				request: { body: "none" },
+				handler: async () => {
 					const [members, groups] = await Promise.all([
 						listMembers(),
 						listGroups(),
 					]);
 					return { members, groups };
+				},
+			}),
+			"members/update": definePluginRoute({
+				methods: ["POST"],
+				permission: "users:manage",
+				request: { body: "json" },
+				handler: async (ctx) => {
+					const input = (ctx.input ?? {}) as {
+						userId?: string;
+						groups?: unknown;
+					};
+					if (!input.userId) return { ok: false };
+					const ok = await setMemberGroups(
+						input.userId,
+						parseGroups(input.groups),
+					);
+					return { ok };
 				},
 			}),
 		},

@@ -26,9 +26,10 @@ interface MembersData {
 }
 
 const ENDPOINT = "/_emdash/api/plugins/member-groups/members";
+const UPDATE_ENDPOINT = `${ENDPOINT}/update`;
 
-async function request(body?: { userId: string; groups: string[] }) {
-	const response = await fetch(ENDPOINT, {
+async function request(path: string, body?: { userId: string; groups: string[] }) {
+	const response = await fetch(path, {
 		method: body ? "POST" : "GET",
 		headers: {
 			// Private plugin routes require this CSRF header on every method.
@@ -49,7 +50,7 @@ export function MembersPage() {
 	const [saving, setSaving] = useState<string | null>(null);
 
 	useEffect(() => {
-		request()
+		request(ENDPOINT)
 			.then((result) => setData(result as MembersData))
 			.catch(() => setError("Could not load members."));
 	}, []);
@@ -58,7 +59,7 @@ export function MembersPage() {
 		setSaving(member.id);
 		setError(null);
 		try {
-			await request({ userId: member.id, groups });
+			await request(UPDATE_ENDPOINT, { userId: member.id, groups });
 			setData((current) =>
 				current
 					? {
