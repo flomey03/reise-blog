@@ -1,0 +1,90 @@
+/*
+  Erde -- warmes Leinen, Sand und Oliv.
+
+  Light mode sits on a soft linen canvas with olive for links, buttons and
+  focus rings. Dark mode keeps the same earth family but inverts the scale:
+  deep moss instead of near-black, pale olive instead of ink. Only design
+  tokens are set here; the layout and components read them.
+
+  --color-bg stays a flat colour because the sticky header mixes it with
+  transparent. The gradient lives in --color-bg-wash and is applied to the
+  body by ../erde-overrides.css.
+*/
+
+:root {
+	--color-bg: light-dark(#f8f7f0, #1d2019);
+	--color-surface: light-dark(#ffffff, #262a21);
+	--color-fill: light-dark(#eff0e6, #2e3328);
+	--color-fill-strong: light-dark(#e4e6d8, #383e31);
+
+	--color-text: light-dark(#262720, #e9ecdf);
+	--color-text-secondary: light-dark(#565a4b, #c2c7b4);
+	--color-muted: light-dark(#6c7162, #9aa08d);
+
+	--color-border: light-dark(#e0e2d4, #333a2d);
+	--color-border-subtle: light-dark(#ecede4, #2b3126);
+	--color-border-strong: light-dark(#c9ceba, #454d3e);
+
+	--color-ring: light-dark(rgb(38 39 32 / 0.08), rgb(233 236 223 / 0.1));
+	--color-media-outline: light-dark(rgb(38 39 32 / 0.12), rgb(233 236 223 / 0.1));
+	--color-shadow: light-dark(rgb(38 39 32 / 0.06), rgb(0 0 0 / 0.35));
+	--color-shadow-strong: light-dark(rgb(38 39 32 / 0.14), rgb(0 0 0 / 0.55));
+
+	--color-brand: light-dark(#5c6b45, #b7c69c);
+	--color-brand-hover: light-dark(#475435, #cbd8b6);
+	--color-on-brand: light-dark(#fbfaf2, #1d2019);
+
+	/*
+	 * The wash is intentionally quiet: two wide, low-opacity earth glows over
+	 * the flat canvas colour. The dark variant is selected in erde-overrides.css
+	 * with the same light/dark precedence as the tokens above.
+	 */
+	--color-bg-wash:
+		radial-gradient(
+			1100px 700px at 12% -5%,
+			rgb(140 152 112 / 0.16),
+			transparent 65%
+		),
+		radial-gradient(
+			900px 650px at 88% 18%,
+			rgb(206 186 148 / 0.14),
+			transparent 62%
+		);
+	--color-bg-wash-dark:
+		radial-gradient(
+			1100px 700px at 12% -5%,
+			rgb(140 152 112 / 0.1),
+			transparent 65%
+		),
+		radial-gradient(
+			900px 650px at 88% 18%,
+			rgb(206 186 148 / 0.07),
+			transparent 62%
+		);
+}
+
+/*
+ * Light-mode values for browsers without light-dark() (Safari < 17.5,
+ * Chrome < 123). Must mirror the light values above.
+ */
+@supports not (color: light-dark(#000, #fff)) {
+	:root {
+		--color-bg: #f8f7f0;
+		--color-surface: #ffffff;
+		--color-fill: #eff0e6;
+		--color-fill-strong: #e4e6d8;
+		--color-text: #262720;
+		--color-text-secondary: #565a4b;
+		--color-muted: #6c7162;
+		--color-border: #e0e2d4;
+		--color-border-subtle: #ecede4;
+		--color-border-strong: #c9ceba;
+		--color-ring: rgb(38 39 32 / 0.08);
+		--color-media-outline: rgb(38 39 32 / 0.12);
+		--color-shadow: rgb(38 39 32 / 0.06);
+		--color-shadow-strong: rgb(38 39 32 / 0.14);
+		--color-brand: #5c6b45;
+		--color-brand-hover: #475435;
+		--color-on-brand: #fbfaf2;
+	}
+}

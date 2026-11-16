@@ -1,0 +1,29 @@
+<svg
+	xmlns="http://www.w3.org/2000/svg"
+	viewBox="0 0 360 80"
+	width="360"
+	height="80"
+	role="img"
+	aria-label="Weitwinkel"
+>
+	<g
+		fill="none"
+		stroke="#5c6b45"
+		stroke-width="3.5"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+	>
+		<circle cx="40" cy="40" r="27" />
+		<path d="M17 52l14-17 12 14 7-9 15 12" />
+	</g>
+	<circle cx="52" cy="26" r="4" fill="#c9b48c" />
+	<text
+		x="88"
+		y="53"
+		fill="#5c6b45"
+		font-family="Inter, 'Helvetica Neue', Arial, sans-serif"
+		font-size="38"
+		font-weight="600"
+		letter-spacing="-1.4"
+	>Weitwinkel</text>
+</svg>

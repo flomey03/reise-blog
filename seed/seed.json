@@ -1,982 +1,1803 @@
 {
-	"$schema": "https://emdashcms.com/seed.schema.json",
-	"version": "1",
-	"meta": {
-		"name": "Blog Starter",
-		"description": "A blog with posts and pages",
-		"author": "EmDash"
-	},
-	"settings": {},
-	"collections": [
-		{
-			"slug": "posts",
-			"label": "Posts",
-			"labelSingular": "Post",
-			"urlPattern": "/posts/{slug}",
-			"supports": ["drafts", "revisions", "preview", "scheduling", "search", "seo"],
-			"commentsEnabled": true,
-			"fields": [
-				{
-					"slug": "title",
-					"label": "Title",
-					"type": "string",
-					"required": true,
-					"searchable": true
-				},
-				{
-					"slug": "featured_image",
-					"label": "Featured Image",
-					"type": "image"
-				},
-				{
-					"slug": "content",
-					"label": "Content",
-					"type": "portableText",
-					"searchable": true
-				},
-				{
-					"slug": "excerpt",
-					"label": "Excerpt",
-					"type": "text"
-				},
-				{
-					"slug": "place",
-					"label": "Place",
-					"type": "string"
-				},
-				{
-					"slug": "latitude",
-					"label": "Latitude",
-					"type": "number"
-				},
-				{
-					"slug": "longitude",
-					"label": "Longitude",
-					"type": "number"
-				}
-			]
-		},
-		{
-			"slug": "pages",
-			"label": "Pages",
-			"labelSingular": "Page",
-			"urlPattern": "/pages/{slug}",
-			"supports": ["drafts", "revisions", "preview", "search", "seo"],
-			"fields": [
-				{
-					"slug": "title",
-					"label": "Title",
-					"type": "string",
-					"required": true,
-					"searchable": true
-				},
-				{
-					"slug": "content",
-					"label": "Content",
-					"type": "portableText",
-					"searchable": true
-				}
-			]
-		}
-	],
-	"taxonomies": [
-		{
-			"name": "category",
-			"label": "Categories",
-			"labelSingular": "Category",
-			"hierarchical": true,
-			"collections": ["posts"],
-			"terms": [
-				{
-					"slug": "development",
-					"label": "Development"
-				},
-				{
-					"slug": "design",
-					"label": "Design"
-				},
-				{
-					"slug": "notes",
-					"label": "Notes"
-				}
-			]
-		},
-		{
-			"name": "tag",
-			"label": "Tags",
-			"labelSingular": "Tag",
-			"hierarchical": false,
-			"collections": ["posts"],
-			"terms": [
-				{
-					"slug": "webdev",
-					"label": "Web Development"
-				},
-				{
-					"slug": "opinion",
-					"label": "Opinion"
-				},
-				{
-					"slug": "tools",
-					"label": "Tools"
-				},
-				{
-					"slug": "creativity",
-					"label": "Creativity"
-				}
-			]
-		},
-		{
-			"name": "member-group",
-			"label": "Member groups",
-			"labelSingular": "Member group",
-			"hierarchical": false,
-			"collections": ["posts"],
-			"terms": [
-				{
-					"slug": "all",
-					"label": "All members"
-				},
-				{
-					"slug": "family",
-					"label": "Family"
-				},
-				{
-					"slug": "friends",
-					"label": "Friends"
-				},
-				{
-					"slug": "private",
-					"label": "Private"
-				}
-			]
-		}
-	],
-	"bylines": [
-		{
-			"id": "byline-editorial",
-			"slug": "emdash-editorial",
-			"displayName": "EmDash Editorial"
-		},
-		{
-			"id": "byline-guest",
-			"slug": "guest-contributor",
-			"displayName": "Guest Contributor",
-			"isGuest": true
-		}
-	],
-	"menus": [
-		{
-			"name": "primary",
-			"label": "Primary Navigation",
-			"items": [
-				{
-					"type": "custom",
-					"label": "Home",
-					"url": "/"
-				},
-				{
-					"type": "custom",
-					"label": "Timeline",
-					"url": "/timeline"
-				},
-				{
-					"type": "custom",
-					"label": "Map",
-					"url": "/map"
-				},
-				{
-					"type": "custom",
-					"label": "Categories",
-					"url": "/categories"
-				}
-			]
-		}
-	],
-	"widgetAreas": [
-		{
-			"name": "sidebar",
-			"label": "Sidebar",
-			"description": "Widget area displayed on single post pages",
-			"widgets": [
-				{
-					"type": "component",
-					"componentId": "core:search",
-					"title": "Search"
-				},
-				{
-					"type": "component",
-					"componentId": "core:categories",
-					"title": "Categories"
-				},
-				{
-					"type": "component",
-					"componentId": "core:tags",
-					"title": "Tags"
-				},
-				{
-					"type": "component",
-					"componentId": "core:recent-posts",
-					"title": "Recent Posts",
-					"props": {
-						"count": 5,
-						"showDate": true
-					}
-				},
-				{
-					"type": "component",
-					"componentId": "core:archives",
-					"title": "Archives",
-					"props": {
-						"type": "monthly",
-						"limit": 6
-					}
-				}
-			]
-		},
-		{
-			"name": "footer",
-			"label": "Footer",
-			"description": "Widget area displayed in the site footer",
-			"widgets": [
-				{
-					"type": "content",
-					"title": "About",
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "A blog about software, design, and the occasional stray thought.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						}
-					]
-				}
-			]
-		}
-	],
-	"sections": [
-		{
-			"slug": "newsletter-signup",
-			"title": "Newsletter Signup",
-			"description": "A call-to-action block for newsletter subscriptions",
-			"keywords": ["newsletter", "subscribe", "email", "cta"],
-			"source": "theme",
-			"content": [
-				{
-					"_type": "block",
-					"style": "h3",
-					"children": [
-						{
-							"_type": "span",
-							"text": "Stay in the loop",
-							"_key": "k1"
-						}
-					],
-					"_key": "k0"
-				},
-				{
-					"_type": "block",
-					"style": "normal",
-					"children": [
-						{
-							"_type": "span",
-							"text": "Get notified when new posts are published. No spam, unsubscribe anytime.",
-							"_key": "k3"
-						}
-					],
-					"_key": "k2"
-				}
-			]
-		},
-		{
-			"slug": "about-author",
-			"title": "About the Author",
-			"description": "Brief author bio for use in posts or pages",
-			"keywords": ["author", "bio", "about"],
-			"source": "theme",
-			"content": [
-				{
-					"_type": "block",
-					"style": "normal",
-					"children": [
-						{
-							"_type": "span",
-							"text": "A software developer who writes about building things on the web. Based somewhere with good coffee and reliable internet.",
-							"_key": "k1"
-						}
-					],
-					"_key": "k0"
-				}
-			]
-		}
-	],
-	"content": {
-		"pages": [
-			{
-				"id": "about",
-				"slug": "about",
-				"status": "published",
-				"data": {
-					"title": "About",
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "A place for writing about software, design, and the occasional stray thought. No posting schedule, no newsletter funnel. Just things I wanted to write down.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Built with Astro and EmDash. The source is open if you want to see how it works.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						}
-					]
-				}
-			}
-		],
-		"posts": [
-			{
-				"id": "post-1",
-				"slug": "building-for-the-long-term",
-				"status": "published",
-				"data": {
-					"title": "Building for the Long Term",
-					"excerpt": "The frameworks will change. The databases will change. What survives is the clarity of your thinking.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=800&fit=crop",
-							"alt": "Code on a monitor in a dark room",
-							"filename": "building-long-term.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Every few years the industry collectively decides that everything we've been doing is wrong and there's a better way. New frameworks, new paradigms, new build tools. The churn is relentless, and if you're not careful, you spend more time migrating than building.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "I've been writing software long enough to have seen several of these cycles. jQuery to Backbone to Angular to React to whatever comes next. Each transition felt urgent at the time. Looking back, the things that actually mattered were rarely about the framework.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "What survives",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Clean data models survive. Clear boundaries between systems survive. Good naming survives. The decision to keep things simple when you could have made them clever - that definitely survives.",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "What doesn't survive is code that was written to impress, abstractions built for problems that never materialized, and architectures designed around a framework's opinions rather than the domain's reality.",
-									"_key": "k9"
-								}
-							],
-							"_key": "k8"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The best code I've written is boring. It reads like prose, does one thing well, and doesn't require a PhD in category theory to understand. The worst code I've written was technically impressive at the time.",
-									"_key": "k11"
-								}
-							],
-							"_key": "k10"
-						}
-					]
-				},
-				"bylines": [
-					{
-						"byline": "byline-editorial"
-					},
-					{
-						"byline": "byline-guest",
-						"roleLabel": "Guest essay"
-					}
-				],
-				"taxonomies": {
-					"category": ["development"],
-					"tag": ["opinion"]
-				}
-			},
-			{
-				"id": "post-2",
-				"slug": "the-case-for-static",
-				"status": "published",
-				"data": {
-					"title": "The Case for Static",
-					"excerpt": "Static sites aren't a step backwards. They're what you get when you take performance and simplicity seriously.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&h=800&fit=crop",
-							"alt": "Laptop and coffee on a wooden table",
-							"filename": "case-for-static.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "There's a certain irony in the fact that the web started static, went dynamic, and is now swinging back toward static again. But the static sites of today aren't the hand-coded HTML pages of 1998. They're generated, optimized, and deployed to edge networks that serve them in milliseconds.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The pitch for server-rendered everything was compelling: dynamic content, personalization, real-time data. But most sites don't need most of that most of the time. A blog post doesn't need to be rendered on every request. A product page doesn't change every second.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The performance argument",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "A static file served from a CDN is as fast as the web gets. No cold starts, no database queries, no server-side rendering overhead. The Time to First Byte is essentially the network latency to your nearest edge node. You can't beat physics.",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "And when you do need dynamic behavior, you can add it surgically. An island of interactivity in a sea of static HTML. The best of both worlds, without paying the cost of either at all times.",
-									"_key": "k9"
-								}
-							],
-							"_key": "k8"
-						}
-					]
-				},
-				"bylines": [
-					{
-						"byline": "byline-editorial"
-					}
-				],
-				"taxonomies": {
-					"category": ["development"],
-					"tag": ["webdev", "opinion"]
-				}
-			},
-			{
-				"id": "post-3",
-				"slug": "learning-in-public",
-				"status": "published",
-				"data": {
-					"title": "Learning in Public",
-					"excerpt": "Writing about what you're learning is the fastest way to find out what you don't actually understand.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=1200&h=800&fit=crop",
-							"alt": "Notebook and pen on a desk",
-							"filename": "learning-in-public.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "I started writing about things I was learning not because I had anything original to say, but because I kept forgetting what I'd figured out. The blog posts were notes to my future self, published publicly more out of laziness than courage.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "What I didn't expect was how much the writing itself would accelerate the learning. There's a particular kind of clarity that comes from trying to explain something to someone else. The gaps in your understanding, which you can happily ignore when the knowledge lives only in your head, become painfully obvious when you try to put it into sentences.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The fear of being wrong",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The biggest barrier isn't time or writing skill. It's the fear of publishing something that turns out to be wrong. But here's the thing: being wrong publicly is one of the most efficient ways to learn. Someone will correct you, often kindly, and you'll remember that correction forever.",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The posts that helped me most weren't written by experts. They were written by people one step ahead of me on the same path, in language that hadn't yet been polished into abstraction. There's a place for that kind of writing, and it's more valuable than most people realize.",
-									"_key": "k9"
-								}
-							],
-							"_key": "k8"
-						}
-					]
-				},
-				"taxonomies": {
-					"category": ["notes"],
-					"tag": ["opinion"]
-				}
-			},
-			{
-				"id": "post-4",
-				"slug": "small-tools-big-impact",
-				"status": "published",
-				"data": {
-					"title": "Small Tools, Big Impact",
-					"excerpt": "The best developer tools do one thing well and get out of your way. A love letter to focused software.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1575026615908-666710ae5e47?w=1200&h=800&fit=crop",
-							"alt": "Wrenches and hand tools hanging on a workshop wall",
-							"filename": "small-tools.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "There's a class of software that doesn't get enough appreciation. Not the frameworks or the platforms or the IDEs, but the small, sharp tools that solve one problem so well you stop thinking about them. They become invisible, which is the highest compliment you can pay a tool.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "I'm talking about things like ripgrep, which searches code so fast it changed how I think about searching. Or jq, which makes JSON feel like a first-class data format in the terminal. Or curl, which has been quietly powering the internet's plumbing for decades.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The Unix philosophy, revisited",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Do one thing well. The advice is old enough to be a cliche, but the best modern tools still follow it. They don't try to be platforms. They don't have plugin ecosystems or configuration languages or startup wizards. They do their job and they compose with other tools that do theirs.",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The temptation is always to add more. One more feature, one more option, one more integration. But every addition is a decision someone has to make, a path through the code that has to be maintained, a thing that can break. The best tools resist this. They stay small, and in staying small, they stay reliable.",
-									"_key": "k9"
-								}
-							],
-							"_key": "k8"
-						}
-					]
-				},
-				"taxonomies": {
-					"category": ["development"],
-					"tag": ["tools"]
-				}
-			},
-			{
-				"id": "post-5",
-				"slug": "designing-with-constraints",
-				"status": "published",
-				"data": {
-					"title": "Designing with Constraints",
-					"excerpt": "Limitations aren't obstacles to creativity. They're the structure that makes creativity possible.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=1200&h=800&fit=crop",
-							"alt": "Pencils and design tools on a desk",
-							"filename": "designing-with-constraints.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Give a designer a blank canvas and unlimited time, and they'll often produce something mediocre. Give them a tight brief, a small screen, and a deadline, and they'll surprise you. This isn't a paradox - it's how creativity actually works.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Constraints force decisions. When you can't use more than two typefaces, you have to choose carefully. When the page has to load in under a second, every element earns its place. When the interface has to work on a 320px screen, you discover what's truly essential.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Embracing the box",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The web itself is a constraint. HTML flows in one direction. CSS has a box model. Browsers have viewport sizes and font rendering quirks. You can fight these constraints or you can work with them, and the results are dramatically different.",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The designs I admire most don't look like they were forced through a framework. They look like they grew naturally from the medium, respecting its grain rather than working against it. That only happens when you treat constraints as creative partners rather than enemies.",
-									"_key": "k9"
-								}
-							],
-							"_key": "k8"
-						}
-					]
-				},
-				"taxonomies": {
-					"category": ["design"],
-					"tag": ["creativity"]
-				}
-			},
-			{
-				"id": "post-6",
-				"slug": "a-weekend-with-a-side-project",
-				"status": "published",
-				"data": {
-					"title": "A Weekend with a Side Project",
-					"excerpt": "No stakeholders, no deadlines, no Jira tickets. Just you and a dumb idea that might turn into something.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=1200&h=800&fit=crop",
-							"alt": "Code on a screen with a dark theme",
-							"filename": "weekend-side-project.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Saturday morning. Coffee's made, the house is quiet, and I've got an idea that's been nagging at me all week. Not a good idea, necessarily - just a persistent one. A small tool that does a thing I keep doing manually. How hard could it be?",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "This is the best kind of programming. No requirements document, no sprint planning, no pull request reviews. Just a text editor and a problem. The freedom to make terrible architectural decisions, rewrite everything twice, and follow tangents that turn out to be dead ends.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Why side projects matter",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Side projects are where you learn things your day job would never teach you. Not because the problems are harder, but because you're free to take risks. Try a language you've never used. Build something without a framework. Deploy to a platform you've only read about. The stakes are zero, which makes the learning maximum.",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "By Sunday evening, the thing sort of works. It's rough, the error handling is nonexistent, and the README is a single sentence. But it solves the problem I set out to solve, and I learned three things I didn't know on Friday. Not a bad weekend.",
-									"_key": "k9"
-								}
-							],
-							"_key": "k8"
-						}
-					]
-				},
-				"taxonomies": {
-					"category": ["development"],
-					"tag": ["creativity"]
-				}
-			},
-			{
-				"id": "post-7",
-				"slug": "notes-on-simplicity",
-				"status": "published",
-				"data": {
-					"title": "Notes on Simplicity",
-					"excerpt": "Simplicity isn't the absence of complexity. It's the result of understanding a problem well enough to solve it cleanly.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1559051668-e1fa58f25786?w=1200&h=800&fit=crop",
-							"alt": "Geometric pattern carved into white paper",
-							"filename": "notes-on-simplicity.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Every piece of software starts simple. A few files, a clear purpose, a small surface area. Then features get added, edge cases get handled, and before long you're looking at something that requires a diagram to understand. This isn't inevitable, but it takes discipline to prevent.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The hard part of simplicity isn't the initial design. It's the ongoing resistance to complication. Every feature request, every bug fix, every refactor is an opportunity to add complexity. Saying no is the most important design skill, and the least celebrated.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Removing as a feature",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The best version of a product often has fewer features than the previous one. Not because features were missing, but because someone had the courage to remove things that weren't earning their keep. Every feature has a cost - in maintenance, in cognitive load, in the weight of the interface.",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Simplicity is a practice, not a destination. You never arrive at simple. You just keep asking: is this necessary? Could this be clearer? Is there a way to solve this problem by removing something instead of adding something? The answer is yes more often than you'd expect.",
-									"_key": "k9"
-								}
-							],
-							"_key": "k8"
-						}
-					]
-				},
-				"taxonomies": {
-					"category": ["notes"],
-					"tag": ["opinion"]
-				}
-			},
-			{
-				"id": "post-draft",
-				"slug": "work-in-progress",
-				"status": "draft",
-				"data": {
-					"title": "Work in Progress",
-					"excerpt": "This post is still being written.",
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "This is a draft post that won't appear in the public listing.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						}
-					]
-				}
-			}
-		]
-	}
+  "$schema": "https://emdashcms.com/seed.schema.json",
+  "version": "1",
+  "meta": {
+    "name": "Weitwinkel",
+    "description": "Ein deutscher Reiseblog über Städte, Berge und Küsten.",
+    "author": "Florian Meyer"
+  },
+  "settings": {
+    "title": "Weitwinkel",
+    "tagline": "Reisenotizen zwischen Küste, Berg und Stadt.",
+    "postsPerPage": 9,
+    "dateFormat": "d. MMMM yyyy",
+    "timezone": "Europe/Berlin",
+    "seo": {
+      "titleSeparator": " · "
+    }
+  },
+  "collections": [
+    {
+      "slug": "posts",
+      "label": "Beiträge",
+      "labelSingular": "Beitrag",
+      "urlPattern": "/posts/{slug}",
+      "supports": [
+        "drafts",
+        "revisions",
+        "preview",
+        "scheduling",
+        "search",
+        "seo"
+      ],
+      "commentsEnabled": true,
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Titel",
+          "type": "string",
+          "required": true,
+          "searchable": true
+        },
+        {
+          "slug": "featured_image",
+          "label": "Beitragsbild",
+          "type": "image"
+        },
+        {
+          "slug": "content",
+          "label": "Inhalt",
+          "type": "portableText",
+          "searchable": true
+        },
+        {
+          "slug": "excerpt",
+          "label": "Teaser",
+          "type": "text"
+        },
+        {
+          "slug": "place",
+          "label": "Ort",
+          "type": "string"
+        },
+        {
+          "slug": "latitude",
+          "label": "Breitengrad",
+          "type": "number"
+        },
+        {
+          "slug": "longitude",
+          "label": "Längengrad",
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "slug": "pages",
+      "label": "Seiten",
+      "labelSingular": "Seite",
+      "urlPattern": "/pages/{slug}",
+      "supports": [
+        "drafts",
+        "revisions",
+        "preview",
+        "search",
+        "seo"
+      ],
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Titel",
+          "type": "string",
+          "required": true,
+          "searchable": true
+        },
+        {
+          "slug": "content",
+          "label": "Inhalt",
+          "type": "portableText",
+          "searchable": true
+        }
+      ]
+    }
+  ],
+  "taxonomies": [
+    {
+      "name": "category",
+      "label": "Kategorien",
+      "labelSingular": "Kategorie",
+      "hierarchical": true,
+      "collections": [
+        "posts"
+      ],
+      "terms": [
+        {
+          "slug": "slow-travel",
+          "label": "Slow Travel",
+          "description": "Langsam reisen, länger bleiben, weniger abhaken."
+        },
+        {
+          "slug": "staedte",
+          "label": "Städte",
+          "description": "Kaffee, Architektur und die Umwege dazwischen."
+        },
+        {
+          "slug": "berge",
+          "label": "Berge",
+          "description": "Wanderwege, Hütten und das Licht über den Gipfeln."
+        },
+        {
+          "slug": "kueste",
+          "label": "Küste",
+          "description": "Wind, Salz und Orte, an denen das Land aufhört."
+        },
+        {
+          "slug": "notizen",
+          "label": "Notizen",
+          "description": "Kleine Beobachtungen, Listen und Dinge für später."
+        }
+      ]
+    },
+    {
+      "name": "tag",
+      "label": "Tags",
+      "labelSingular": "Tag",
+      "hierarchical": false,
+      "collections": [
+        "posts"
+      ],
+      "terms": [
+        {
+          "slug": "nachtzug",
+          "label": "Nachtzug"
+        },
+        {
+          "slug": "wandern",
+          "label": "Wandern"
+        },
+        {
+          "slug": "kaffee",
+          "label": "Kaffee"
+        },
+        {
+          "slug": "architektur",
+          "label": "Architektur"
+        },
+        {
+          "slug": "insel",
+          "label": "Insel"
+        },
+        {
+          "slug": "strand",
+          "label": "Strand"
+        },
+        {
+          "slug": "essen",
+          "label": "Essen"
+        },
+        {
+          "slug": "fotografie",
+          "label": "Fotografie"
+        },
+        {
+          "slug": "packen",
+          "label": "Packen"
+        }
+      ]
+    },
+    {
+      "name": "member-group",
+      "label": "Mitgliedergruppen",
+      "labelSingular": "Mitgliedergruppe",
+      "hierarchical": false,
+      "collections": [
+        "posts"
+      ],
+      "terms": [
+        {
+          "slug": "all",
+          "label": "Alle Mitglieder"
+        },
+        {
+          "slug": "family",
+          "label": "Familie"
+        },
+        {
+          "slug": "friends",
+          "label": "Freunde"
+        },
+        {
+          "slug": "private",
+          "label": "Privat"
+        }
+      ]
+    }
+  ],
+  "menus": [
+    {
+      "name": "primary",
+      "label": "Hauptnavigation",
+      "items": [
+        {
+          "type": "custom",
+          "label": "Start",
+          "url": "/"
+        },
+        {
+          "type": "custom",
+          "label": "Zeitleiste",
+          "url": "/timeline"
+        },
+        {
+          "type": "custom",
+          "label": "Karte",
+          "url": "/map"
+        },
+        {
+          "type": "custom",
+          "label": "Kategorien",
+          "url": "/categories"
+        },
+        {
+          "type": "custom",
+          "label": "Über",
+          "url": "/pages/about"
+        }
+      ]
+    }
+  ],
+  "widgetAreas": [
+    {
+      "name": "sidebar",
+      "label": "Seitenleiste",
+      "description": "Widgets neben dem Artikel",
+      "widgets": [
+        {
+          "type": "component",
+          "componentId": "core:search",
+          "title": "Suche"
+        },
+        {
+          "type": "component",
+          "componentId": "core:categories",
+          "title": "Kategorien"
+        },
+        {
+          "type": "component",
+          "componentId": "core:tags",
+          "title": "Tags"
+        },
+        {
+          "type": "component",
+          "componentId": "core:recent-posts",
+          "title": "Neueste Beiträge",
+          "props": {
+            "count": 5,
+            "showDate": true
+          }
+        },
+        {
+          "type": "component",
+          "componentId": "core:archives",
+          "title": "Archiv",
+          "props": {
+            "type": "monthly",
+            "limit": 6
+          }
+        }
+      ]
+    },
+    {
+      "name": "footer",
+      "label": "Fußzeile",
+      "description": "Widgets im Footer",
+      "widgets": [
+        {
+          "type": "content",
+          "title": "Über diesen Blog",
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Weitwinkel sammelt Reisenotizen zwischen Küste, Berg und Stadt. Keine Ranglisten, keine Eile – nur das, was von unterwegs hängen bleibt.",
+                  "_key": "k160"
+                }
+              ],
+              "_key": "k161"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Manche Texte sind nur für Familie, Freunde oder Mitglieder sichtbar. Der Rest ist offen für alle, die gern langsam lesen.",
+                  "_key": "k162"
+                }
+              ],
+              "_key": "k163"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "slug": "packliste",
+      "title": "Packliste",
+      "description": "Eine kurze Liste für das Wesentliche",
+      "keywords": [
+        "packen",
+        "reise",
+        "rucksack"
+      ],
+      "source": "theme",
+      "content": [
+        {
+          "_type": "block",
+          "style": "h3",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Was immer mitkommt",
+              "_key": "k164"
+            }
+          ],
+          "_key": "k165"
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Ein Paar Schuhe, mit dem man auch nach zehn Kilometern noch laufen kann. Eine Jacke, die wirklich dicht ist. Ein Notizbuch, in dem Sätze falsch sein dürfen.",
+              "_key": "k166"
+            }
+          ],
+          "_key": "k167"
+        }
+      ]
+    },
+    {
+      "slug": "about-author",
+      "title": "Über den Autor",
+      "description": "Kurze Bio für Beiträge und Seiten",
+      "keywords": [
+        "autor",
+        "bio",
+        "über"
+      ],
+      "source": "theme",
+      "content": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Florian Meyer schreibt über Reisen zwischen Küste, Berg und Stadt. Am liebsten langsam, mit dem Nachtzug oder zu Fuß, und immer mit einem Notizbuch in der Tasche.",
+              "_key": "k168"
+            }
+          ],
+          "_key": "k169"
+        }
+      ]
+    }
+  ],
+  "bylines": [
+    {
+      "id": "byline-florian",
+      "slug": "florian-meyer",
+      "displayName": "Florian Meyer",
+      "bio": "Schreibt über Reisen zwischen Küste, Berg und Stadt. Am liebsten langsam und mit einem Notizbuch in der Tasche.",
+      "isGuest": false
+    },
+    {
+      "id": "byline-mira",
+      "slug": "mira-halden",
+      "displayName": "Mira Halden",
+      "bio": "Reist für gutes Essen und gute Gespräche, meistens mit dem Zug.",
+      "isGuest": true
+    }
+  ],
+  "content": {
+    "posts": [
+      {
+        "id": "post-nachtzug-lissabon",
+        "slug": "mit-dem-nachtzug-nach-lissabon",
+        "status": "published",
+        "data": {
+          "title": "Mit dem Nachtzug nach Lissabon",
+          "excerpt": "Zwölf Stunden, ein Liegewagen und die langsame Auflösung des Zeitgefühls: Warum der Nachtzug für mich die ehrlichste Art zu reisen bleibt.",
+          "featured_image": {
+            "$media": {
+              "url": "https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=1600&h=1000&fit=crop",
+              "alt": "Eine Straßenbahn in Lissabon vor pastellfarbenen Häusern",
+              "filename": "nachtzug-lissabon.jpg"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Der Zug rollt kurz nach neun aus dem Bahnhof, und für einen Moment sieht man die Stadt nur noch als Lichter, die langsam kleiner werden. Im Liegewagen riecht es nach Metall, frisch bezogenen Laken und dem Kaffee, den jemand in einem Thermobecher mitgebracht hat. Draußen ziehen Felder vorbei, dann dunkle Hügel, dann nichts.",
+                  "_key": "k0"
+                }
+              ],
+              "_key": "k1"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Die erste Stunde gehört dem Abschied",
+                  "_key": "k2"
+                }
+              ],
+              "_key": "k3"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Wir reden zu viel, wie immer am Anfang. Über das, was wir zurücklassen, über die Termine, die noch offen sind, über die Frage, ob drei Tage in Lissabon genug sind. Irgendwann wird es still. Die Frau im Abteil unter uns liest mit einer kleinen Lampe, und der Schaffner klopft zweimal an die Tür, bevor er weitergeht.",
+                  "_key": "k4"
+                }
+              ],
+              "_key": "k5"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Was nachts anders wird",
+                  "_key": "k6"
+                }
+              ],
+              "_key": "k7"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Gegen Mitternacht wird der Gang zur Bar eine kleine Reise. Der Boden schwankt, die Türen schließen mit einem satten Klicken, und im Speisewagen sitzen Leute, die man tagsüber nie treffen würde. Ein älteres Paar spielt Karten, ein Student schreibt in ein Notizbuch, der Barkeeper schenkt Wein aus, als wäre es das Selbstverständlichste der Welt.",
+                  "_key": "k8"
+                }
+              ],
+              "_key": "k9"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Ich schlafe schlecht und bin trotzdem wach. Das ist kein Schlaf, das ist ein Dazwischen: das Rattern der Schienen, das Licht einer vorbeiziehenden Stadt, das Gefühl, dass der Weg selbst der eigentliche Ort ist.",
+                  "_key": "k10"
+                }
+              ],
+              "_key": "k11"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Ankommen, ohne anzukommen",
+                  "_key": "k12"
+                }
+              ],
+              "_key": "k13"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Kurz vor Lissabon wird der Himmel grau, dann rosa, dann ein sehr helles Blau. Der Tejo liegt da wie ein Brett, und die ersten Häuser leuchten so, als hätte jemand die Farbe extra für diesen Morgen angerührt. Wir steigen aus, mit steifen Beinen und diesem leichten Schwindel, den man nach einer Nacht im Zug hat.",
+                  "_key": "k14"
+                }
+              ],
+              "_key": "k15"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Zwölf Stunden später sitze ich in einem Café und bestelle den ersten Kaffee. Der Nachtzug hat mich nicht schneller gemacht. Aber er hat mir eine Nacht geschenkt, die ich sonst verpasst hätte.",
+                  "_key": "k16"
+                }
+              ],
+              "_key": "k17"
+            }
+          ],
+          "place": "Lissabon, Portugal",
+          "latitude": 38.7223,
+          "longitude": -9.1393
+        },
+        "bylines": [
+          {
+            "byline": "byline-florian"
+          }
+        ],
+        "taxonomies": {
+          "category": [
+            "slow-travel"
+          ],
+          "tag": [
+            "nachtzug",
+            "essen"
+          ]
+        }
+      },
+      {
+        "id": "post-dolomiten",
+        "slug": "drei-tage-zwischen-den-dolomiten",
+        "status": "published",
+        "data": {
+          "title": "Drei Tage zwischen den Dolomiten",
+          "excerpt": "Ein Rucksack, zwei Paar Socken und zu viel Ehrfurcht: Wie sich drei Tage in den Bergen anfühlen, wenn man aufhört, jeden Gipfel erreichen zu wollen.",
+          "featured_image": {
+            "$media": {
+              "url": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1600&h=1000&fit=crop",
+              "alt": "Felsgipfel der Dolomiten im Morgenlicht",
+              "filename": "dolomiten.jpg"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Die Seilbahn bringt uns in zwölf Minuten dorthin, wofür andere einen halben Tag brauchen. Oben ist die Luft dünn und klar, und die Felsen stehen so nah, dass man den Kopf in den Nacken legen muss. Für einen Moment bin ich irritiert: So viel Landschaft auf einmal wirkt fast unhöflich.",
+                  "_key": "k18"
+                }
+              ],
+              "_key": "k19"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Der erste Aufstieg",
+                  "_key": "k20"
+                }
+              ],
+              "_key": "k21"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Wir gehen nicht schnell. Der Weg zieht sich über Geröll, dann über eine Wiese, dann wieder über Geröll. Neben uns läuft ein Mann mit einem kleinen Hund, der aussieht, als hätte er schon hundert Gipfel gesehen. Wir lassen ihn vorbei. Nach einer Stunde wird der Rucksack schwerer, der Atem kürzer, die Aussicht größer.",
+                  "_key": "k22"
+                }
+              ],
+              "_key": "k23"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Licht, das den Weg vorgibt",
+                  "_key": "k24"
+                }
+              ],
+              "_key": "k25"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Am Nachmittag kippt das Licht. Die hellen Wandflächen werden gelb, die Schatten blau, und plötzlich sieht jeder Stein aus wie ein Wegweiser. Ich fotografiere zu viel und merke erst später, dass die besten Bilder gar nicht auf der Kamera sind: die Hand meiner Schwester auf dem Felsen, der Wind, der durch die Jacke zieht, das gemeinsame Schweigen vor dem Gipfel.",
+                  "_key": "k26"
+                }
+              ],
+              "_key": "k27"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Abends in der Hütte gibt es Suppe, Brot und einen Teller mit Bergkäse. Draußen wird es schnell kalt. Wir sitzen mit Leuten aus drei Ländern am Tisch und verständigen uns mit Händen und einem sehr schlechten Italienisch. Es ist genau die Art von Abend, für die man Berge überhaupt braucht.",
+                  "_key": "k28"
+                }
+              ],
+              "_key": "k29"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Am dritten Tag regnet es. Wir steigen trotzdem auf, bis der Weg unter den Wolken verschwindet, und drehen dann um. Manchmal ist die vernünftige Entscheidung die bessere Geschichte.",
+                  "_key": "k30"
+                }
+              ],
+              "_key": "k31"
+            }
+          ],
+          "place": "Dolomiten, Italien",
+          "latitude": 46.5405,
+          "longitude": 12.1357
+        },
+        "bylines": [
+          {
+            "byline": "byline-florian"
+          }
+        ],
+        "taxonomies": {
+          "category": [
+            "berge"
+          ],
+          "tag": [
+            "wandern",
+            "fotografie"
+          ]
+        }
+      },
+      {
+        "id": "post-lissabon-ohne-liste",
+        "slug": "lissabon-ohne-liste",
+        "status": "published",
+        "data": {
+          "title": "Lissabon ohne Liste",
+          "excerpt": "Kein Plan, keine Sternchenliste, keine Route: Was passiert, wenn man eine Stadt einfach gehen lässt.",
+          "featured_image": {
+            "$media": {
+              "url": "https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=1600&h=1000&fit=crop",
+              "alt": "Espresso und ein Notizbuch auf einem kleinen Cafétisch",
+              "filename": "lissabon-cafe.jpg"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Wir haben keine Liste. Keine Sternchen, keine gespeicherten Orte, keine Route. Nur eine grobe Richtung und die Bereitschaft, uns zu verlaufen. Das ist der ganze Plan.",
+                  "_key": "k32"
+                }
+              ],
+              "_key": "k33"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Kaffee, dann weiter",
+                  "_key": "k34"
+                }
+              ],
+              "_key": "k35"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Die erste Bar am Morgen ist so klein, dass man an der Tür fast umdreht. Drinnen stehen drei Männer an der Theke, trinken Espresso und schauen Fußball auf einem alten Fernseher. Wir bestellen zwei Kaffees und zwei Pastéis, die noch warm sind. Der Zucker fällt auf den Tisch, die Untertasse ist gesprungen, und es ist vollkommen richtig.",
+                  "_key": "k36"
+                }
+              ],
+              "_key": "k37"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Danach gehen wir einfach. Eine Straße hinauf, eine Treppe hinunter, an einer Frau mit Blumen vorbei, die ihre Ware in Eimern sortiert. Die Stadt ist keine Kulisse, sie arbeitet. Wäsche hängt zwischen den Fenstern, Lieferwagen stehen halb auf dem Bürgersteig, irgendwo wird gebohrt.",
+                  "_key": "k38"
+                }
+              ],
+              "_key": "k39"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Die Umwege zählen",
+                  "_key": "k40"
+                }
+              ],
+              "_key": "k41"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Am Nachmittag landen wir in einem Viertel, dessen Namen ich nicht kenne. Eine ältere Frau deutet auf unsere Kamera und dann auf den Hügel. Wir verstehen sie nicht, gehen aber hinauf. Oben steht eine Kirche mit blauen Kacheln, und unter uns liegt der Fluss, breit und silbern.",
+                  "_key": "k42"
+                }
+              ],
+              "_key": "k43"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Am Abend sind die Füße müde, der Kopf leer, und wir haben nichts abgehakt. Genau so soll es sein.",
+                  "_key": "k44"
+                }
+              ],
+              "_key": "k45"
+            }
+          ],
+          "place": "Lissabon, Portugal",
+          "latitude": 38.7169,
+          "longitude": -9.1399
+        },
+        "bylines": [
+          {
+            "byline": "byline-florian"
+          }
+        ],
+        "taxonomies": {
+          "category": [
+            "staedte"
+          ],
+          "tag": [
+            "kaffee",
+            "architektur"
+          ],
+          "member-group": [
+            "all"
+          ]
+        }
+      },
+      {
+        "id": "post-etretat",
+        "slug": "auf-den-klippen-von-etretat",
+        "status": "published",
+        "data": {
+          "title": "Auf den Klippen von Étretat",
+          "excerpt": "Wind, Kreide und ein trockenes Brot: Ein Nachmittag an der Küste, an dem die Landschaft größer ist als alle Gedanken.",
+          "featured_image": {
+            "$media": {
+              "url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&h=1000&fit=crop",
+              "alt": "Weiter Blick über Meer und Küste",
+              "filename": "etretat.jpg"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Der Wind kommt von der See, als hätte er es eilig. Er drückt die Jacke gegen den Körper, zupft an den Haaren, macht jede Bewegung zu einer kleinen Verhandlung. Unter uns liegen die Klippen, weiß und abgebrochen, als hätte jemand ein Stück Kreide ins Meer gestellt.",
+                  "_key": "k46"
+                }
+              ],
+              "_key": "k47"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Der Weg nach oben",
+                  "_key": "k48"
+                }
+              ],
+              "_key": "k49"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Vom Strand führt ein steinerner Weg nach oben. Wir gehen langsam, bleiben stehen, schauen zurück. Der Hafen wird kleiner, die Boote sehen aus wie Spielzeug, und die Möwen scheinen plötzlich sehr groß.",
+                  "_key": "k50"
+                }
+              ],
+              "_key": "k51"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Oben ist alles offen: Himmel, Meer, eine Bank, ein paar Schafe, die sich nicht für uns interessieren. Wir setzen uns und essen die Brote, die wir am Morgen gekauft haben. Sie sind trocken, aber der Wind macht sie besser.",
+                  "_key": "k52"
+                }
+              ],
+              "_key": "k53"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Was bleibt",
+                  "_key": "k54"
+                }
+              ],
+              "_key": "k55"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Am späten Nachmittag zieht Nebel auf. Die Klippen verschwinden zuerst an den Rändern, dann ganz. Für ein paar Minuten ist die Welt nur noch Geräusch: Wellen, Wind, das Knirschen von Schuhen auf dem Weg.",
+                  "_key": "k56"
+                }
+              ],
+              "_key": "k57"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Ich habe keine besondere Erkenntnis mitgenommen. Nur dieses Gefühl, dass es manchmal reicht, an einem Ort zu stehen, der größer ist als man selbst.",
+                  "_key": "k58"
+                }
+              ],
+              "_key": "k59"
+            }
+          ],
+          "place": "Étretat, Frankreich",
+          "latitude": 49.707,
+          "longitude": 0.205
+        },
+        "bylines": [
+          {
+            "byline": "byline-florian"
+          }
+        ],
+        "taxonomies": {
+          "category": [
+            "kueste"
+          ],
+          "tag": [
+            "strand",
+            "fotografie"
+          ]
+        }
+      },
+      {
+        "id": "post-unterwegs-brauchen",
+        "slug": "was-ich-unterwegs-wirklich-brauche",
+        "status": "published",
+        "data": {
+          "title": "Was ich unterwegs wirklich brauche",
+          "excerpt": "Nach zwei Wochen mit einem zu schweren Rucksack ist die Liste erstaunlich kurz. Drei Dinge bleiben, der Rest darf zu Hause bleiben.",
+          "featured_image": {
+            "$media": {
+              "url": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1600&h=1000&fit=crop",
+              "alt": "Reiseutensilien, Karte und Kamera auf einem Tisch",
+              "filename": "unterwegs-brauchen.jpg"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Nach zwei Wochen mit einem Rucksack, der zu schwer geworden ist, ist die Liste erstaunlich kurz. Das meiste, was ich eingepackt habe, habe ich nicht gebraucht. Und das wenige, was ich wirklich brauche, hätte in eine kleinere Tasche gepasst.",
+                  "_key": "k60"
+                }
+              ],
+              "_key": "k61"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Drei Dinge, die bleiben",
+                  "_key": "k62"
+                }
+              ],
+              "_key": "k63"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Ein gutes Paar Schuhe. Nicht die schönsten, nicht die neuesten, sondern die, mit denen ich auch nach zehn Kilometern noch laufen kann, ohne über jeden Schritt nachzudenken.",
+                  "_key": "k64"
+                }
+              ],
+              "_key": "k65"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Eine Jacke, die wirklich dicht ist. Ich habe zu lange gedacht, dass eine dünne Regenjacke reicht. Sie reicht nicht. Der Wind findet jede Naht, und irgendwann ist man nicht mehr nur nass, sondern müde.",
+                  "_key": "k66"
+                }
+              ],
+              "_key": "k67"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Ein Notizbuch und ein Stift. Das Handy ist voller Fotos, aber die Sätze, die mir unterwegs einfallen, passen nicht in eine Notiz-App. Sie brauchen eine Seite, auf der sie falsch sein dürfen.",
+                  "_key": "k68"
+                }
+              ],
+              "_key": "k69"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Was zu Hause bleiben kann",
+                  "_key": "k70"
+                }
+              ],
+              "_key": "k71"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Die zweite Kamera. Das dritte Buch. Die Schuhe, die ich nur für einen Abend brauche. Die Hoffnung, dass ich irgendwo Sport mache. Und die kleine Tasche für Dinge, die ich in der großen Tasche nicht finde.",
+                  "_key": "k72"
+                }
+              ],
+              "_key": "k73"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Seitdem packe ich am Abend vor der Abreise noch einmal alles aus und lege die Hälfte zurück. Es funktioniert nicht immer. Aber es wird jedes Mal leichter.",
+                  "_key": "k74"
+                }
+              ],
+              "_key": "k75"
+            }
+          ]
+        },
+        "bylines": [
+          {
+            "byline": "byline-florian"
+          }
+        ],
+        "taxonomies": {
+          "category": [
+            "notizen"
+          ],
+          "tag": [
+            "packen"
+          ]
+        }
+      },
+      {
+        "id": "post-kopenhagen",
+        "slug": "ein-sonntag-in-kopenhagen",
+        "status": "published",
+        "data": {
+          "title": "Ein Sonntag in Kopenhagen",
+          "excerpt": "Zimtschnecken, Regen auf dem Asphalt und ein Hund auf einem Lastenfahrrad: Ein Sonntag ohne Plan, aber mit genug Zeit.",
+          "featured_image": {
+            "$media": {
+              "url": "https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?w=1600&h=1000&fit=crop",
+              "alt": "Farbige Häuser am Hafen von Kopenhagen",
+              "filename": "kopenhagen.jpg"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Sonntagmorgen in Kopenhagen riecht nach Regen, der gerade vorbei ist. Die Straßen glänzen, die Fahrräder stehen dichter als die Autos, und irgendwo hinter einer Ecke läutet eine Glocke. Wir haben keinen Plan, nur Hunger.",
+                  "_key": "k76"
+                }
+              ],
+              "_key": "k77"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Frühstück ohne Eile",
+                  "_key": "k78"
+                }
+              ],
+              "_key": "k79"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Im Café gibt es Zimtschnecken, die noch warm sind, und Kaffee aus einer Tasse, die aussieht, als wäre sie schon oft benutzt worden. Am Nachbartisch sitzt eine Familie mit zwei Kindern. Das kleinere Kind isst nur die Rosinen aus dem Gebäck. Die Mutter lässt es gewähren.",
+                  "_key": "k80"
+                }
+              ],
+              "_key": "k81"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Danach gehen wir am Wasser entlang. Die Häuser stehen in einer Reihe wie farbige Bücher, und die Boote darin bewegen sich kaum. Ein Mann angelt von der Kaimauer, obwohl es dafür eindeutig der falsche Ort ist.",
+                  "_key": "k82"
+                }
+              ],
+              "_key": "k83"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Zu Fuß am Wasser",
+                  "_key": "k84"
+                }
+              ],
+              "_key": "k85"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Wir laufen bis zum Hafen, dann weiter, bis die Stadt hinter uns dünner wird. Unterwegs reden wir über nichts Besonderes: über die Miete, über das nächste Wochenende, über die Frage, ob man in einer Stadt leben könnte, in der es im November so früh dunkel wird.",
+                  "_key": "k86"
+                }
+              ],
+              "_key": "k87"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Am Abend sitzen wir in einem kleinen Restaurant und bestellen Smørrebrød. Es ist offen, ein bisschen zu teuer und sehr gut. Draußen fährt ein Lastenfahrrad vorbei, auf dem ein Hund sitzt. Das ist der ganze Sonntag.",
+                  "_key": "k88"
+                }
+              ],
+              "_key": "k89"
+            }
+          ],
+          "place": "Kopenhagen, Dänemark",
+          "latitude": 55.6761,
+          "longitude": 12.5683
+        },
+        "bylines": [
+          {
+            "byline": "byline-florian"
+          }
+        ],
+        "taxonomies": {
+          "category": [
+            "staedte"
+          ],
+          "tag": [
+            "kaffee",
+            "architektur"
+          ]
+        }
+      },
+      {
+        "id": "post-pass",
+        "slug": "ueber-den-pass",
+        "status": "published",
+        "data": {
+          "title": "Über den Pass",
+          "excerpt": "Ein Weg, der nicht enden will, ein Kreuz aus Metall und die Erkenntnis, dass der Abstieg manchmal mehr kostet als der Aufstieg.",
+          "featured_image": {
+            "$media": {
+              "url": "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1600&h=1000&fit=crop",
+              "alt": "Steiniger Wanderweg in den Bergen",
+              "filename": "pass.jpg"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Der Pass beginnt nicht am Gipfel, sondern am Parkplatz. Dort stehen drei Autos, ein Bus und ein Mann, der seine Wanderschuhe schnürt, als würde er gleich zu einer Expedition aufbrechen. Wir lachen. Eine Stunde später schnüre ich meine eigenen Schuhe zum zweiten Mal.",
+                  "_key": "k90"
+                }
+              ],
+              "_key": "k91"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Der Aufstieg",
+                  "_key": "k92"
+                }
+              ],
+              "_key": "k93"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Der Weg ist gut markiert und trotzdem anstrengend. Er führt durch einen Wald, der nach Regen riecht, dann über eine Wiese, dann in ein Geröllfeld, in dem jeder Schritt zwei zurückrutscht. Wir gehen im Rhythmus: atmen, treten, atmen, treten.",
+                  "_key": "k94"
+                }
+              ],
+              "_key": "k95"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Auf halber Höhe wird die Landschaft weit. Man sieht den Talboden, die Straße, ein paar Häuser, und dahinter die nächste Bergkette, die schon wieder aussieht wie eine Wand.",
+                  "_key": "k96"
+                }
+              ],
+              "_key": "k97"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Oben",
+                  "_key": "k98"
+                }
+              ],
+              "_key": "k99"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Am Pass steht ein Kreuz aus Metall, daneben eine Bank und ein Schild, das vor Wetterumschwüngen warnt. Der Wind ist stark, aber nicht feindlich. Wir trinken Tee aus der Thermoskanne und teilen uns ein Stück Schokolade, das in der Sonne weich geworden ist.",
+                  "_key": "k100"
+                }
+              ],
+              "_key": "k101"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Der Abstieg ist leichter, aber nicht schöner. Die Knie arbeiten, die Konzentration lässt nach, und irgendwann sehnt man sich nur noch nach einem Stuhl. Unten, am Parkplatz, ziehe ich die Schuhe aus und merke erst dann, wie sehr sie mich heute getragen haben.",
+                  "_key": "k102"
+                }
+              ],
+              "_key": "k103"
+            }
+          ],
+          "place": "Zermatt, Schweiz",
+          "latitude": 46.0207,
+          "longitude": 7.7491
+        },
+        "bylines": [
+          {
+            "byline": "byline-florian"
+          }
+        ],
+        "taxonomies": {
+          "category": [
+            "berge"
+          ],
+          "tag": [
+            "wandern"
+          ]
+        }
+      },
+      {
+        "id": "post-ruegen",
+        "slug": "familienzeit-auf-ruegen",
+        "status": "published",
+        "data": {
+          "title": "Familienzeit auf Rügen",
+          "excerpt": "Drei Generationen, ein Ferienhaus und ein Strand, der sich jedes Jahr ein Stück verschiebt. Über das Glück, nichts vorzuhaben.",
+          "featured_image": {
+            "$media": {
+              "url": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1600&h=1000&fit=crop",
+              "alt": "Holzsteg am Wasser in der Abendsonne",
+              "filename": "ruegen.jpg"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Drei Generationen, ein Ferienhaus und ein Kofferraum voller Dinge, die niemand braucht: zwei Luftmatratzen, ein Gesellschaftsspiel mit fehlenden Teilen, der Lieblingsbecher meiner Nichte. Wir fahren los, obwohl der Wetterbericht Regen ansagt. Natürlich fahren wir los.",
+                  "_key": "k104"
+                }
+              ],
+              "_key": "k105"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Strand, der sich verschiebt",
+                  "_key": "k106"
+                }
+              ],
+              "_key": "k107"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Der Strand ist an manchen Stellen breiter als letztes Jahr, an anderen fast verschwunden. Die Ostsee nimmt sich, was sie braucht, und gibt es ein paar Meter weiter wieder zurück. Meine Mutter sagt, das sei früher anders gewesen. Vielleicht stimmt es. Vielleicht sieht man es nur genauer, wenn man älter wird.",
+                  "_key": "k108"
+                }
+              ],
+              "_key": "k109"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Die Kinder baden trotz Wind. Sie kommen mit blauen Lippen und vollem Sand in den Haaren zurück und wollen sofort wieder rein. Wir wickeln sie in Handtücher, die nach Sonnencreme und Salz riechen.",
+                  "_key": "k110"
+                }
+              ],
+              "_key": "k111"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Abende im Haus",
+                  "_key": "k112"
+                }
+              ],
+              "_key": "k113"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Abends kochen wir zusammen. Es gibt Kartoffelsalat, Würstchen und viel zu viel Brot. Mein Vater erzählt eine Geschichte, die wir alle schon kennen, und wir hören trotzdem zu. Danach sitzen wir auf der Terrasse, bis es zu kalt wird.",
+                  "_key": "k114"
+                }
+              ],
+              "_key": "k115"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Am letzten Morgen gehe ich allein noch einmal zum Wasser. Es ist still, nur ein Boot und ein paar Möwen. Ich nehme mir vor, öfter herzukommen. Ich weiß jetzt schon, dass es nicht passieren wird. Aber der Vorsatz gehört dazu.",
+                  "_key": "k116"
+                }
+              ],
+              "_key": "k117"
+            }
+          ],
+          "place": "Rügen, Deutschland",
+          "latitude": 54.42,
+          "longitude": 13.4
+        },
+        "bylines": [
+          {
+            "byline": "byline-florian"
+          }
+        ],
+        "taxonomies": {
+          "category": [
+            "kueste"
+          ],
+          "tag": [
+            "strand",
+            "insel"
+          ],
+          "member-group": [
+            "family"
+          ]
+        }
+      },
+      {
+        "id": "post-bologna",
+        "slug": "freundesabend-in-bologna",
+        "status": "published",
+        "data": {
+          "title": "Freundesabend in Bologna",
+          "excerpt": "Ein Markt kurz vor Ladenschluss, eine zu kleine Küche und sechs Leute um einen Tisch, der eigentlich nur für vier gedacht ist.",
+          "featured_image": {
+            "$media": {
+              "url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&h=1000&fit=crop",
+              "alt": "Ein gedeckter Tisch mit Pasta und Wein",
+              "filename": "bologna.jpg"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Der Abend beginnt auf dem Markt, obwohl es schon fast dunkel ist. Die Stände packen zusammen, ein Händler verkauft die letzten Tomaten zum halben Preis, und Mira kauft mehr, als wir tragen können. „Das ist der Punkt“, sagt sie. „Man kocht mit dem, was übrig ist.“",
+                  "_key": "k118"
+                }
+              ],
+              "_key": "k119"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Erst der Markt",
+                  "_key": "k120"
+                }
+              ],
+              "_key": "k121"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "In der Wohnung ist die Küche klein und die Arbeitsfläche voll. Jemand schneidet Zwiebeln, jemand öffnet Wein, jemand sucht den Dosenöffner, obwohl es keine Dose gibt. Wir kochen Tagliatelle mit einer Sauce, die keine besondere Sauce ist, aber nach zwei Stunden so riecht, als hätte jemand den ganzen Tag gearbeitet.",
+                  "_key": "k122"
+                }
+              ],
+              "_key": "k123"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Der Tisch ist zu klein für sechs Leute. Wir stellen einen Stuhl an die Seite, benutzen Bücher als Untersetzer und essen in Etappen, weil nicht genug Teller da sind. Es ist laut, warm und ein bisschen chaotisch.",
+                  "_key": "k124"
+                }
+              ],
+              "_key": "k125"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Dann die Küche",
+                  "_key": "k126"
+                }
+              ],
+              "_key": "k127"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Später sitzen wir auf dem Balkon. Über den Dächern hängt Wäsche, irgendwo spielt jemand Gitarre, und die Stadt ist nicht still, sondern nur leiser. Mira erzählt von ihrer ersten Reise nach Italien, mit zwanzig, und wie sie damals dachte, sie müsse alles sehen. Heute sieht sie vor allem, was sie nicht mehr braucht.",
+                  "_key": "k128"
+                }
+              ],
+              "_key": "k129"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Am nächsten Morgen gibt es Reste zum Frühstück. Kalte Pasta, guter Kaffee, ein bisschen zu wenig Schlaf. Manchmal ist das die beste Art, eine Stadt kennenzulernen: durch ihre Küchen und die Menschen, die darin sitzen.",
+                  "_key": "k130"
+                }
+              ],
+              "_key": "k131"
+            }
+          ],
+          "place": "Bologna, Italien",
+          "latitude": 44.4949,
+          "longitude": 11.3426
+        },
+        "bylines": [
+          {
+            "byline": "byline-florian"
+          },
+          {
+            "byline": "byline-mira",
+            "roleLabel": "Gastbeitrag"
+          }
+        ],
+        "taxonomies": {
+          "category": [
+            "slow-travel"
+          ],
+          "tag": [
+            "essen",
+            "architektur"
+          ],
+          "member-group": [
+            "friends"
+          ]
+        }
+      },
+      {
+        "id": "post-notizen-fuer-uns",
+        "slug": "notizen-fuer-uns",
+        "status": "published",
+        "data": {
+          "title": "Notizen für uns",
+          "excerpt": "Es gibt Sätze, die nicht auf die Startseite gehören. Nicht weil sie geheim wären, sondern weil sie einen kleineren Kreis brauchen.",
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Es gibt Sätze, die nicht auf die Startseite gehören. Nicht weil sie geheim wären, sondern weil sie nur in einem bestimmten Kreis Sinn ergeben. Dieser Text ist so einer.",
+                  "_key": "k132"
+                }
+              ],
+              "_key": "k133"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Was wir behalten wollen",
+                  "_key": "k134"
+                }
+              ],
+              "_key": "k135"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Den Abend am Fluss, als wir beschlossen haben, im Sommer wegzufahren, ohne zu wissen wohin. Das Kreidebild an der Wand, das niemand aufhängen wollte und das jetzt hängt. Den Satz, den du gesagt hast, als ich krank war, und den ich nicht wiederhole, weil er dann seine Wirkung verliert.",
+                  "_key": "k136"
+                }
+              ],
+              "_key": "k137"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Wir vergessen so viel. Nicht, weil es unwichtig war, sondern weil der Alltag lauter ist. Vielleicht ist das der Grund, warum ich diese Notizen schreibe: nicht für die Öffentlichkeit, sondern für uns, damit wir später nachlesen können, wie es war.",
+                  "_key": "k138"
+                }
+              ],
+              "_key": "k139"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Falls du das hier liest und dich fragst, ob es für dich bestimmt ist: ja. Und falls nicht, ist es auch nicht schlimm. Manche Dinge bleiben einfach im Kreis.",
+                  "_key": "k140"
+                }
+              ],
+              "_key": "k141"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Der Rest steht in keinem Reiseführer.",
+                  "_key": "k142"
+                }
+              ],
+              "_key": "k143"
+            }
+          ]
+        },
+        "bylines": [
+          {
+            "byline": "byline-florian"
+          }
+        ],
+        "taxonomies": {
+          "category": [
+            "notizen"
+          ],
+          "member-group": [
+            "private"
+          ]
+        }
+      },
+      {
+        "id": "post-packliste",
+        "slug": "packliste-fuer-drei-jahreszeiten",
+        "status": "draft",
+        "data": {
+          "title": "Packliste für drei Jahreszeiten",
+          "excerpt": "Eine Liste, die noch wächst: Was im Frühling, Sommer und Herbst wirklich mitkommt.",
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Diese Liste ist noch nicht fertig. Sie wächst mit jeder Reise und schrumpft beim Packen. Für den Moment sammle ich hier, was sich über drei Jahreszeiten bewährt hat.",
+                  "_key": "k144"
+                }
+              ],
+              "_key": "k145"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Frühling",
+                  "_key": "k146"
+                }
+              ],
+              "_key": "k147"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Eine dünne Jacke, die man über alles ziehen kann. Ein Schal, der auch als Handtuch funktioniert, wenn es sein muss. Schuhe, die Regen vertragen, ohne gleich schwer zu werden.",
+                  "_key": "k148"
+                }
+              ],
+              "_key": "k149"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Sommer",
+                  "_key": "k150"
+                }
+              ],
+              "_key": "k151"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Ein langärmliges Hemd für abends. Eine Flasche, die dicht hält. Sonnencreme, die nicht nach Urlaub riecht. Und ein Buch, das man auch nach zehn Seiten noch lesen will.",
+                  "_key": "k152"
+                }
+              ],
+              "_key": "k153"
+            },
+            {
+              "_type": "block",
+              "style": "h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Herbst",
+                  "_key": "k154"
+                }
+              ],
+              "_key": "k155"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Warme Socken, ein Pullover, eine Mütze. Ein Notizbuch mit festem Einband. Und eine Taschenlampe, weil es früher dunkel wird, als man denkt.",
+                  "_key": "k156"
+                }
+              ],
+              "_key": "k157"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Was fehlt, kommt nach der nächsten Reise dazu.",
+                  "_key": "k158"
+                }
+              ],
+              "_key": "k159"
+            }
+          ]
+        },
+        "bylines": [
+          {
+            "byline": "byline-florian"
+          }
+        ],
+        "taxonomies": {
+          "category": [
+            "notizen"
+          ],
+          "tag": [
+            "packen"
+          ]
+        }
+      }
+    ],
+    "pages": [
+      {
+        "id": "about",
+        "slug": "about",
+        "status": "published",
+        "data": {
+          "title": "Über Weitwinkel",
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Weitwinkel ist mein Reiseblog: Notizen aus Städten, Bergen und von der Küste. Keine Ranking-Listen, keine „10 Dinge, die du gesehen haben musst“. Eher das, was hängen bleibt: ein Geruch, ein Satz, ein Umweg.",
+                  "_key": "k170"
+                }
+              ],
+              "_key": "k171"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Ich schreibe langsam und reise am liebsten ohne festen Plan. Manchmal mit dem Nachtzug, manchmal mit dem Rucksack, manchmal nur bis zur nächsten Stadt. Die Beiträge entstehen unterwegs oder ein paar Wochen später, wenn die Bilder sortiert sind und die Erinnerung anfängt, sich zu ordnen.",
+                  "_key": "k172"
+                }
+              ],
+              "_key": "k173"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Manche Texte sind nur für Familie, Freunde oder Mitglieder sichtbar. Nicht, weil sie besonders spektakulär sind, sondern weil sie einen kleineren Kreis brauchen. Wenn du Zugang möchtest, melde dich.",
+                  "_key": "k174"
+                }
+              ],
+              "_key": "k175"
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Gebaut mit Astro und EmDash. Die Karte zeigt alle Beiträge mit einem Ort; die Zeitleiste sortiert sie nach Themen.",
+                  "_key": "k176"
+                }
+              ],
+              "_key": "k177"
+            }
+          ]
+        }
+      }
+    ]
+  }
 }

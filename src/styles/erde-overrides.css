@@ -1,0 +1,57 @@
+/*
+  Erde overrides.
+
+  Kept in CSS so Base.astro stays untouched. The body rule is unlayered, so it
+  wins over the @layer base background without !important. The logo selectors
+  are more specific than Astro's scoped .brand__logo[data-astro-cid-...] rule.
+*/
+
+body {
+	background-color: var(--color-bg);
+	background-image: var(--color-bg-wash);
+	background-attachment: fixed;
+}
+
+/* Dark mode: same precedence as the tokens (explicit class beats OS). */
+@supports (color: light-dark(#000, #fff)) {
+	:root.dark body {
+		background-image: var(--color-bg-wash-dark);
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:root:not(.light) body {
+			background-image: var(--color-bg-wash-dark);
+		}
+	}
+
+	:root.dark .brand__logo {
+		filter: brightness(1.45) saturate(0.95);
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:root:not(.light) .brand__logo {
+			filter: brightness(1.45) saturate(0.95);
+		}
+	}
+}
+
+/* Header logo: larger than the template default, never squeezed by the nav. */
+.site-header .brand .brand__logo {
+	height: 40px;
+	max-width: 200px;
+	flex-shrink: 0;
+}
+
+/* The footer mark stays a little quieter. */
+.site-footer .brand .brand__logo {
+	height: 32px;
+	max-width: 180px;
+	flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+	.site-header .brand .brand__logo {
+		height: 32px;
+		max-width: 160px;
+	}
+}
