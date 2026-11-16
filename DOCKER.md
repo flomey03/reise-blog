@@ -48,24 +48,27 @@ docker compose up -d --build     # nach git pull: neu bauen und starten
 
 ## Plugin-Sandbox (`workerd`)
 
-Sandboxed Plugins (etwa aus der Registry) laufen in `workerd`. Das
-`workerd`-Paket ist nur ein JS-Shim; das eigentliche Binärprogramm kommt aus
-dem plattformspezifischen optionalen Paket `@cloudflare/workerd-linux-*`.
-Fehlt es im Image, antwortet jede Plugin-Route mit:
+Sandboxed Plugins (etwa aus der Registry) laufen in `workerd`. Zwei Dinge
+müssen im Image stimmen, sonst antwortet jede Plugin-Route mit:
 
 ```text
 Plugin sandbox unavailable for …: workerd failed to start
 ```
 
-Der Build prüft das jetzt mit `workerd --version` und bricht ab, bevor ein
-kaputtes Image entsteht. Tritt der Fehler trotzdem im laufenden Container
-auf, zuerst das echte Log ansehen (die Route-Meldung verschluckt die
-Ursache):
+Die Route-Meldung verschluckt die Ursache; im Log steht sie hinter
+`[emdash:workerd] startup failed:` und in den `[emdash:workerd]`-Zeilen:
 
 ```bash
 docker compose logs emdash | grep -A10 'emdash:workerd'
+```
 
-# Denselben Pfad prüfen, den der Sandbox-Runner benutzt:
+**1. Das Binärprogramm.** Das `workerd`-Paket ist nur ein JS-Shim; das
+eigentliche Binärprogramm kommt aus dem plattformspezifischen optionalen
+Paket `@cloudflare/workerd-linux-*`. Der Build prüft es mit
+`workerd --version` und bricht ab, bevor ein kaputtes Image entsteht.
+Denselben Pfad prüfen, den der Sandbox-Runner benutzt:
+
+```bash
 docker compose exec emdash node -e "
 const p = require('path');
 const b = p.join(p.dirname(require.resolve('workerd')), '..', 'bin', 'workerd');
@@ -73,8 +76,24 @@ require('child_process').execFileSync(b, ['--version'], { stdio: 'inherit' });
 "
 ```
 
-Letzteres muss eine Versionsnummer ausgeben. Wenn nicht, das Image ohne
-Cache neu bauen — `node_modules` steckt in einer Docker-Layer, ein einmal
+Das muss eine Versionsnummer ausgeben.
+
+**2. Der System-Trust-Store.** `workerd` initialisiert TLS für die Sandbox.
+Fehlt `/etc/ssl/certs/ca-certificates.crt`, bricht es beim Start ab:
+
+```text
+failed: TLS configuration: unexpected error: No CA certificates were loaded from the system
+```
+
+`node:*-slim` bringt keine `ca-certificates` mit; das Runtime-Image
+installiert sie deshalb. Prüfen:
+
+```bash
+docker compose exec emdash ls -l /etc/ssl/certs/ca-certificates.crt
+```
+
+Fehlt eine der beiden Voraussetzungen, das Image ohne Cache neu bauen —
+`node_modules` und die Runtime-Pakete stecken in Docker-Layern, ein einmal
 kaputt gebautes Image würde sonst wiederverwendet:
 
 ```bash
