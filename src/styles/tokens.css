@@ -115,6 +115,7 @@
 		--search-input-width: 200px; /* header search box width */
 
 		/* Radius: card = inset media + card padding, so corners stay concentric */
+		--radius-xs: 3px; /* inline marks, e.g. search highlights */
 		--radius-sm: 6px; /* small controls */
 		--radius: 8px; /* inputs, code */
 		--radius-lg: 12px; /* media inside cards */

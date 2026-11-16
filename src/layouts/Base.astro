@@ -1212,7 +1212,7 @@ const year = new Date().getFullYear();
 				margin-top: 0;
 				padding: 6px;
 				border: 0;
-				border-radius: 14px;
+				border-radius: var(--radius-xl);
 				background: var(--color-surface);
 				box-shadow: var(--shadow-lg);
 				max-height: min(420px, 70vh);
@@ -1274,7 +1274,7 @@ const year = new Date().getFullYear();
 
 			.site-search :global(.emdash-live-search-result-snippet mark) {
 				padding: 0 2px;
-				border-radius: 3px;
+				border-radius: var(--radius-xs);
 				background: var(--color-fill-strong);
 				color: var(--color-text);
 			}

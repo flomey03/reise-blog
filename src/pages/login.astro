@@ -18,7 +18,8 @@ const admin = isAdmin(Astro.locals);
 			<p class="eyebrow">Members</p>
 			<h1 class="intro__title">Sign in</h1>
 			<p class="intro__lead">
-				We email you a sign-in link. No password needed.
+				We email you a sign-in link. No password needed — new addresses from
+				allowed domains get an account on first sign-in.
 			</p>
 		</div>
 	</header>
@@ -61,27 +62,13 @@ const admin = isAdmin(Astro.locals);
 								<AuthForm
 									endpoint="/api/login"
 									buttonLabel="Send sign-in link"
-									successMessage="If an account exists for that address, the link is on its way. Check your inbox."
+									successMessage="If your address can sign in, the link is on its way. Check your inbox (and spam folder)."
 									next={next}
 								/>
 							</>
 						)
 					}
 				</div>
-
-				{
-					!user && (
-						<div class="auth-alt">
-							<p>
-								No account yet? <a href="/signup">Create one</a>
-							</p>
-							<p class="auth-hint">
-								Set up a passkey on this device?{" "}
-								<a href="/_emdash/admin/login">Sign in with a passkey instead</a>
-							</p>
-						</div>
-					)
-				}
 			</div>
 		</div>
 	</section>

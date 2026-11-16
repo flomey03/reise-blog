@@ -1,0 +1,55 @@
+/*
+  Anthracite -- the site's current theme.
+
+  Dark mode uses a warm-neutral anthracite scale instead of the template's
+  near-black. Light mode is unchanged. Only design tokens are set here; the
+  layout and components in Base.astro read them, so the whole site (including
+  the auth pages) follows along.
+
+  Create a new theme by copying _template.css, then point theme.css at it.
+*/
+
+:root {
+	--color-bg: light-dark(#fafafa, #1e2124);
+	--color-surface: light-dark(#ffffff, #262a2e);
+	--color-fill: light-dark(#f2f2f2, #2d3238);
+	--color-fill-strong: light-dark(#e8e8e8, #353b42);
+
+	--color-text: light-dark(#171717, #e9eaeb);
+	--color-text-secondary: light-dark(#525252, #b3b8bd);
+	--color-muted: light-dark(#6b6b6b, #90969c);
+
+	--color-border: light-dark(#e5e5e5, #363b41);
+	--color-border-subtle: light-dark(#efefef, #2f343a);
+	--color-border-strong: light-dark(#d4d4d4, #474d55);
+
+	--color-ring: light-dark(rgb(0 0 0 / 0.07), rgb(255 255 255 / 0.08));
+	--color-media-outline: light-dark(rgb(0 0 0 / 0.1), rgb(255 255 255 / 0.09));
+
+	/* Softer shadows: against anthracite, heavy black shadows look muddy. */
+	--color-shadow: light-dark(rgb(0 0 0 / 0.06), rgb(0 0 0 / 0.32));
+	--color-shadow-strong: light-dark(rgb(0 0 0 / 0.12), rgb(0 0 0 / 0.5));
+}
+
+/*
+ * Light-mode values for browsers without light-dark() (Safari < 17.5,
+ * Chrome < 123). Must mirror the light values above.
+ */
+@supports not (color: light-dark(#000, #fff)) {
+	:root {
+		--color-bg: #fafafa;
+		--color-surface: #ffffff;
+		--color-fill: #f2f2f2;
+		--color-fill-strong: #e8e8e8;
+		--color-text: #171717;
+		--color-text-secondary: #525252;
+		--color-muted: #6b6b6b;
+		--color-border: #e5e5e5;
+		--color-border-subtle: #efefef;
+		--color-border-strong: #d4d4d4;
+		--color-ring: rgb(0 0 0 / 0.07);
+		--color-media-outline: rgb(0 0 0 / 0.1);
+		--color-shadow: rgb(0 0 0 / 0.06);
+		--color-shadow-strong: rgb(0 0 0 / 0.12);
+	}
+}

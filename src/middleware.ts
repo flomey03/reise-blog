@@ -20,7 +20,6 @@ const CMS_PREFIX = "/_emdash";
 /** Reachable without a session: signing in, plus static and machine routes. */
 const PUBLIC_PATHS = new Set([
 	"/login",
-	"/signup",
 	"/login/confirm",
 	"/no-access",
 	"/favicon.ico",

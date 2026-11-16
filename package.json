@@ -12,6 +12,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "start": "node ./dist/server/entry.mjs",
+    "check:theme": "node scripts/check-theme.mjs",
     "typecheck": "astro check"
   },
   "dependencies": {
