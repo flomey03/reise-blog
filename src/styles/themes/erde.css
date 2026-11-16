@@ -1,66 +1,88 @@
 /*
-  Erde -- warmes Leinen, Sand und Oliv.
+  Erde -- warmes Leinen, Sand, Oliv und ein Hauch Ton.
 
-  Light mode sits on a soft linen canvas with olive for links, buttons and
-  focus rings. Dark mode keeps the same earth family but inverts the scale:
-  deep moss instead of near-black, pale olive instead of ink. Only design
+  Light mode sits on a warm linen canvas with moss, clay and sand glows.
+  Dark mode keeps the same earth family but goes deeper: moss at night,
+  warm clay and a little sand instead of a flat near-black. Only design
   tokens are set here; the layout and components read them.
 
   --color-bg stays a flat colour because the sticky header mixes it with
-  transparent. The gradient lives in --color-bg-wash and is applied to the
-  body by ../erde-overrides.css.
+  transparent. The layered gradient lives in --color-bg-wash and is applied
+  to the body by ../erde-overrides.css.
 */
 
 :root {
-	--color-bg: light-dark(#f8f7f0, #1d2019);
-	--color-surface: light-dark(#ffffff, #262a21);
-	--color-fill: light-dark(#eff0e6, #2e3328);
-	--color-fill-strong: light-dark(#e4e6d8, #383e31);
+	--color-bg: light-dark(#f7f2e4, #1a1e16);
+	--color-surface: light-dark(#fffdf7, #252a1f);
+	--color-fill: light-dark(#eef0e1, #2e3426);
+	--color-fill-strong: light-dark(#e2e5d0, #39412f);
 
-	--color-text: light-dark(#262720, #e9ecdf);
-	--color-text-secondary: light-dark(#565a4b, #c2c7b4);
-	--color-muted: light-dark(#6c7162, #9aa08d);
+	--color-text: light-dark(#2b2a20, #ece9db);
+	--color-text-secondary: light-dark(#5d5e4a, #c6c7b3);
+	--color-muted: light-dark(#777964, #9c9f8b);
 
-	--color-border: light-dark(#e0e2d4, #333a2d);
-	--color-border-subtle: light-dark(#ecede4, #2b3126);
-	--color-border-strong: light-dark(#c9ceba, #454d3e);
+	--color-border: light-dark(#dddccb, #343b2b);
+	--color-border-subtle: light-dark(#eae7d9, #2a3024);
+	--color-border-strong: light-dark(#c6c4ae, #47503c);
 
-	--color-ring: light-dark(rgb(38 39 32 / 0.08), rgb(233 236 223 / 0.1));
-	--color-media-outline: light-dark(rgb(38 39 32 / 0.12), rgb(233 236 223 / 0.1));
-	--color-shadow: light-dark(rgb(38 39 32 / 0.06), rgb(0 0 0 / 0.35));
-	--color-shadow-strong: light-dark(rgb(38 39 32 / 0.14), rgb(0 0 0 / 0.55));
+	--color-ring: light-dark(rgb(43 42 32 / 0.08), rgb(236 233 219 / 0.1));
+	--color-media-outline: light-dark(rgb(43 42 32 / 0.12), rgb(236 233 219 / 0.1));
+	--color-shadow: light-dark(rgb(43 42 32 / 0.07), rgb(0 0 0 / 0.38));
+	--color-shadow-strong: light-dark(rgb(43 42 32 / 0.16), rgb(0 0 0 / 0.6));
 
-	--color-brand: light-dark(#5c6b45, #b7c69c);
-	--color-brand-hover: light-dark(#475435, #cbd8b6);
-	--color-on-brand: light-dark(#fbfaf2, #1d2019);
+	--color-brand: light-dark(#5b6a3f, #c5d3a5);
+	--color-brand-hover: light-dark(#465231, #d8e4ba);
+	--color-on-brand: light-dark(#fffdf4, #1a1e16);
 
 	/*
-	 * The wash is intentionally quiet: two wide, low-opacity earth glows over
-	 * the flat canvas colour. The dark variant is selected in erde-overrides.css
-	 * with the same light/dark precedence as the tokens above.
+	 * Several wide, low-opacity glows rather than one flat tint: moss at the
+	 * top left, clay at the top right, sand low left and a second green low
+	 * right. The linear layer underneath keeps the whole page warm.
 	 */
 	--color-bg-wash:
 		radial-gradient(
-			1100px 700px at 12% -5%,
-			rgb(140 152 112 / 0.16),
+			1200px 800px at 8% -10%,
+			rgb(146 158 112 / 0.26),
+			transparent 62%
+		),
+		radial-gradient(
+			950px 700px at 94% 10%,
+			rgb(205 157 121 / 0.19),
+			transparent 60%
+		),
+		radial-gradient(
+			1000px 850px at 88% 92%,
+			rgb(154 174 126 / 0.15),
 			transparent 65%
 		),
 		radial-gradient(
-			900px 650px at 88% 18%,
-			rgb(206 186 148 / 0.14),
-			transparent 62%
-		);
+			900px 700px at 12% 86%,
+			rgb(205 181 138 / 0.16),
+			transparent 65%
+		),
+		linear-gradient(180deg, #fdf9ee 0%, #f5edda 52%, #f0e5d0 100%);
 	--color-bg-wash-dark:
 		radial-gradient(
-			1100px 700px at 12% -5%,
-			rgb(140 152 112 / 0.1),
+			1200px 800px at 8% -10%,
+			rgb(140 158 104 / 0.28),
+			transparent 62%
+		),
+		radial-gradient(
+			950px 700px at 94% 10%,
+			rgb(186 120 88 / 0.18),
+			transparent 60%
+		),
+		radial-gradient(
+			1000px 850px at 88% 92%,
+			rgb(92 116 76 / 0.21),
 			transparent 65%
 		),
 		radial-gradient(
-			900px 650px at 88% 18%,
-			rgb(206 186 148 / 0.07),
-			transparent 62%
-		);
+			900px 700px at 12% 86%,
+			rgb(190 158 110 / 0.13),
+			transparent 65%
+		),
+		linear-gradient(180deg, #23281d 0%, #1c2117 52%, #161a12 100%);
 }
 
 /*
@@ -69,22 +91,22 @@
  */
 @supports not (color: light-dark(#000, #fff)) {
 	:root {
-		--color-bg: #f8f7f0;
-		--color-surface: #ffffff;
-		--color-fill: #eff0e6;
-		--color-fill-strong: #e4e6d8;
-		--color-text: #262720;
-		--color-text-secondary: #565a4b;
-		--color-muted: #6c7162;
-		--color-border: #e0e2d4;
-		--color-border-subtle: #ecede4;
-		--color-border-strong: #c9ceba;
-		--color-ring: rgb(38 39 32 / 0.08);
-		--color-media-outline: rgb(38 39 32 / 0.12);
-		--color-shadow: rgb(38 39 32 / 0.06);
-		--color-shadow-strong: rgb(38 39 32 / 0.14);
-		--color-brand: #5c6b45;
-		--color-brand-hover: #475435;
-		--color-on-brand: #fbfaf2;
+		--color-bg: #f7f2e4;
+		--color-surface: #fffdf7;
+		--color-fill: #eef0e1;
+		--color-fill-strong: #e2e5d0;
+		--color-text: #2b2a20;
+		--color-text-secondary: #5d5e4a;
+		--color-muted: #777964;
+		--color-border: #dddccb;
+		--color-border-subtle: #eae7d9;
+		--color-border-strong: #c6c4ae;
+		--color-ring: rgb(43 42 32 / 0.08);
+		--color-media-outline: rgb(43 42 32 / 0.12);
+		--color-shadow: rgb(43 42 32 / 0.07);
+		--color-shadow-strong: rgb(43 42 32 / 0.16);
+		--color-brand: #5b6a3f;
+		--color-brand-hover: #465231;
+		--color-on-brand: #fffdf4;
 	}
 }
