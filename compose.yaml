@@ -1,38 +1,22 @@
 # Declarative deployment for the blog.
 #
 #   docker compose up -d --build          start (builds the image)
-#   docker compose logs -f app            logs
+#   docker compose logs -f emdash         logs
 #   docker compose down                   stop (the volume survives)
 #
-# One named volume holds everything the app writes: database, sessions and
-# media. Backing it up is a host-side job — see DOCKER.md.
+# One named volume holds everything the app writes: database, sessions, media
+# and the encryption key. Backing it up is a host-side job — see DOCKER.md.
 
 name: reise-blog
 
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: reise-blog:latest
+  emdash:
+    build: .
     restart: unless-stopped
-    # Optional. Without a file the app generates the encryption key into the
-    # data volume on first start, so a fresh clone needs no manual secret step.
-    env_file:
-      - path: ${APP_ENV_FILE:-.env}
-        required: false
-    environment:
-      NODE_ENV: production
-      HOST: 0.0.0.0
-      PORT: "4321"
-      # Everything the app persists lives under /data (see the volume below).
-      EMDASH_DATA_DIR: /data
-      EMDASH_DB_PATH: /data/data.db
-      EMDASH_UPLOADS_DIR: /data/uploads
     ports:
       - "4321:4321"
     volumes:
-      - data:/data
+      - data:/app/data
     healthcheck:
       test:
         - CMD

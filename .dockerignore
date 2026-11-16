@@ -8,6 +8,7 @@ dist
 .claude
 .cursor
 .vscode
+data
 data.db
 data.db-*
 uploads

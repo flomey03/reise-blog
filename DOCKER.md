@@ -1,13 +1,14 @@
 # Docker
 
 Der Blog läuft als einzelner Container. Alles, was er speichert, liegt in
-**einem** benannten Volume:
+**einem** benannten Volume, gemountet auf `/app/data`:
 
 ```text
-reise-blog_data      /data
-                     ├── data.db      SQLite-Datenbank
-                     ├── sessions/    Astro-Sessions (Login)
-                     └── uploads/     Medien aus dem Editor
+reise-blog_data      /app/data
+                     ├── data.db                  SQLite-Datenbank
+                     ├── sessions/                Astro-Sessions (Login)
+                     ├── uploads/                 Medien aus dem Editor
+                     └── secrets/encryption.key   Schlüssel für Plugin-Secrets
 ```
 
 Kein Bind-Mount, keine Host-Pfade: Backup und Restore streamen die Archivdatei
@@ -17,7 +18,6 @@ muss.
 ## Starten
 
 ```bash
-cp .env.example .env        # einmalig, Key eintragen
 docker compose up -d --build
 ```
 
@@ -29,8 +29,7 @@ Beispielinhalte** ab. Im Seed ist bewusst nichts davon vorbelegt.
 das Setup ohne kanonische Origin (Passkeys und E-Mail-Links brauchen sie):
 
 ```bash
-# .env
-EMDASH_SITE_URL=https://deine-domain.example
+EMDASH_SITE_URL=https://deine-domain.example docker compose up -d --build
 ```
 
 Ohne Eintrag fällt Compose auf `http://localhost:4321` zurück — gut zum
@@ -39,10 +38,10 @@ Ausprobieren, aber Anmelde-Links zeigen dann auf localhost.
 ## Alltag
 
 ```bash
-docker compose logs -f app     # Logs
-docker compose restart app     # Neustart
-docker compose down            # stoppen (Volume bleibt)
-docker compose up -d --build   # nach git pull: neu bauen und starten
+docker compose logs -f emdash    # Logs
+docker compose restart emdash    # Neustart
+docker compose down              # stoppen (Volume bleibt)
+docker compose up -d --build     # nach git pull: neu bauen und starten
 ```
 
 ## Schlüssel (`EMDASH_ENCRYPTION_KEY`)
@@ -54,25 +53,18 @@ Datenbank**. Er gehört nicht ins Image und nicht ins Repo.
 Daten-Volume ab:
 
 ```text
-/data/secrets/encryption.key
+/app/data/secrets/encryption.key
 ```
 
 Dadurch ist ein Volume-Backup immer vollständig — Datenbank, Medien und der
 Schlüssel, der die verschlüsselten Werte öffnet. Kein manueller Schritt auf dem
 Server, kein Secret, das beim Restore verloren gehen kann.
 
-Vorrang, falls beides existiert:
-
-1. `EMDASH_ENCRYPTION_KEY` aus der Umgebung (`env_file` / `APP_ENV_FILE`) — ein
-   selbst gesetzter Schlüssel wird **nie** überschrieben.
-2. die Datei im Volume.
-3. sonst wird ein neuer Schlüssel erzeugt.
-
-Willst du den Schlüssel extern verwalten (Secret-Manager, Rotation), setz ihn
-per Env und lass die Datei im Volume in Ruhe:
+Setzt man `EMDASH_ENCRYPTION_KEY` in der Umgebung, gewinnt dieser Wert und die
+Datei im Volume bleibt unangetastet — etwa für einen Secret-Manager:
 
 ```bash
-APP_ENV_FILE=/etc/reise-blog/app.env docker compose up -d
+EMDASH_ENCRYPTION_KEY=emdash_enc_v1_… docker compose up -d
 ```
 
 **Sicherheitshinweis:** Schlüssel und Chiffrat liegen im selben Volume. Wer das
@@ -89,28 +81,30 @@ Schlüssel verschlüsselt Neues, alle gelisteten entschlüsseln weiter.
 Das Volume heißt `reise-blog_data`. Sichern ist ein Host-Job, kein Repo-Job:
 
 ```bash
-docker compose stop app
+docker compose stop emdash
 docker run --rm -v reise-blog_data:/data:ro -v "$PWD":/backup alpine \
   tar -czf "/backup/reiseblog-$(date +%F).tar.gz" -C /data .
-docker compose start app
+docker compose start emdash
 ```
 
 Die App kurz zu stoppen sorgt dafür, dass SQLite-Datei und WAL konsistent sind.
 Zurück geht es genauso:
 
 ```bash
-docker compose stop app
+docker compose stop emdash
 docker run --rm -i -v reise-blog_data:/data alpine \
   sh -c 'rm -rf /data/* && tar -xzf - -C /data' < reiseblog-2026-11-15.tar.gz
-docker compose start app
+docker compose start emdash
 ```
 
-## Warum die Pfade im Dockerfile stehen
+## Warum die Pfade in `astro.config.mjs` stehen
 
-Die Astro-Config wird beim **Build** ausgewertet. Datenbankpfad, Upload-Verzeichnis
-und Session-Treiber sind deshalb schon im Build-Stage auf `/data` gesetzt;
-Runtime-Env-Variablen kämen dafür zu spät. Lokal (`pnpm dev`) bleiben die
-Standardpfade `./data.db` und `./uploads` unverändert.
+Die Astro-Config wird beim **Build** ausgewertet: Datenbankpfad, Upload-Ordner
+und Session-Treiber werden fest in die Server-Ausgabe eingebacken. Zur Laufzeit
+gesetzte Env-Vars kämen dafür zu spät. Deshalb stehen sie als relative Pfade
+unter `./data` in `astro.config.mjs`; im Container (Arbeitsverzeichnis `/app`)
+lösen sie sich zu `/app/data` auf. Lokal (`pnpm dev`) bleiben sie daneben im
+Repo.
 
 ## Netzwerk / Domain
 
@@ -121,6 +115,6 @@ Anmelde-Links auf `localhost`.
 
 ## Was nicht im Image landet
 
-`.dockerignore` schließt `data.db`, `uploads/`, `node_modules`, `dist`, `.git`
-und `.env` aus. Das Image enthält nur Code und die gebaute Server-Ausgabe; alle
-veränderlichen Daten kommen aus dem Volume.
+`.dockerignore` schließt `data/`, `node_modules`, `dist`, `.git` und `.env` aus.
+Das Image enthält nur Code und die gebaute Server-Ausgabe; alle veränderlichen
+Daten kommen aus dem Volume.

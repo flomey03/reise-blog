@@ -6,13 +6,11 @@ import { sqlite } from "emdash/db";
 import { memberGroupsPlugin } from "./src/plugins/member-groups/index.ts";
 
 /**
- * Storage locations. Local development keeps the defaults next to the repo;
- * the container sets these to paths on a mounted volume so data survives
- * `docker compose down`.
+ * Everything the site persists lives under ./data. In the container the data
+ * volume is mounted at /app/data, so these relative paths resolve there; local
+ * development keeps the same layout next to the repo.
  */
-const dataDir = process.env.EMDASH_DATA_DIR;
-const dbPath = process.env.EMDASH_DB_PATH ?? "./data.db";
-const uploadsDir = process.env.EMDASH_UPLOADS_DIR ?? "./uploads";
+const dataDir = "./data";
 
 export default defineConfig({
 	output: "server",
@@ -20,10 +18,8 @@ export default defineConfig({
 		mode: "standalone",
 	}),
 	// Sessions live on the data volume in the container, so restarts don't log
-	// everyone out. Locally the adapter default stays in place.
-	...(dataDir
-		? { session: { driver: sessionDrivers.fsLite({ base: `${dataDir}/sessions` }) } }
-		: {}),
+	// everyone out.
+	session: { driver: sessionDrivers.fsLite({ base: `${dataDir}/sessions` }) },
 	image: {
 		layout: "constrained",
 		responsiveStyles: true,
@@ -31,9 +27,9 @@ export default defineConfig({
 	integrations: [
 		react(),
 		emdash({
-			database: sqlite({ url: `file:${dbPath}` }),
+			database: sqlite({ url: `file:${dataDir}/data.db` }),
 			storage: local({
-				directory: uploadsDir,
+				directory: `${dataDir}/uploads`,
 				baseUrl: "/_emdash/api/media/file",
 			}),
       sandboxRunner: "@emdash-cms/sandbox-workerd/sandbox",
