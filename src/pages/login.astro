@@ -1,7 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import AuthForm from "../components/AuthForm.astro";
-import { isAdmin } from "../lib/members";
+import { isAdmin } from "../plugins/member-groups/roles";
 import "../styles/auth.css";
 
 export const prerender = false;
@@ -36,7 +36,7 @@ const admin = isAdmin(Astro.locals);
 								</p>
 								<div class="auth-actions">
 									<a class="btn" href="/">Back to the site</a>
-									{admin && <a class="auth-admin-link" href="/members">Manage members</a>}
+									{admin && <a class="auth-admin-link" href="/_emdash/admin/plugins/member-groups/members">Manage members</a>}
 								</div>
 								<form method="post" action="/api/logout" class="auth-logout">
 									<button class="btn btn--ghost" type="submit">Sign out</button>

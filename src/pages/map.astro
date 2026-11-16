@@ -2,7 +2,7 @@
 import { getEmDashCollection } from "emdash";
 import Base from "../layouts/Base.astro";
 import { formatDate } from "../utils/locale";
-import { canReadPost } from "../lib/members";
+import { filterReadable } from "../plugins/member-groups/access";
 
 export const prerender = false;
 
@@ -29,9 +29,7 @@ interface Pin {
 	lng: number;
 }
 
-const readable = allPosts.filter((post) =>
-	canReadPost(Astro.locals, post.data.groups),
-);
+const readable = await filterReadable(Astro.locals, allPosts, "member-group");
 const lockedCount = allPosts.length - readable.length;
 
 const pins: Pin[] = [];

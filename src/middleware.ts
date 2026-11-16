@@ -1,5 +1,5 @@
 import { defineMiddleware } from "astro:middleware";
-import { ADMIN_PANEL_MIN_ROLE } from "./lib/members";
+import { ADMIN_PANEL_MIN_ROLE } from "./plugins/member-groups/roles";
 
 /**
  * Two rules, applied before EmDash renders anything:

@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { getSiteSettings } from "emdash";
 import { withEmDashRuntime } from "emdash/middleware";
-import { MEMBER_ROLE } from "../../lib/members";
+import { MEMBER_ROLE } from "../../plugins/member-groups/roles";
 import { sendLoginLink } from "../../lib/server/login-link";
 import { createRateLimiter } from "../../lib/server/rate-limit";
 import {

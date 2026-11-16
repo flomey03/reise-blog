@@ -8,7 +8,7 @@ import { Image } from "emdash/ui";
 import Base from "../layouts/Base.astro";
 import { formatDate } from "../utils/locale";
 import { formatReadingTime, getReadingTime } from "../utils/reading-time";
-import { canReadPost } from "../lib/members";
+import { filterReadable } from "../plugins/member-groups/access";
 
 export const prerender = false;
 
@@ -32,9 +32,7 @@ if (Astro.cache?.enabled) {
 	Astro.cache.set(categoriesResult.cacheHint);
 }
 
-const posts = allPosts.filter((post) =>
-	canReadPost(Astro.locals, post.data.groups),
-);
+const posts = await filterReadable(Astro.locals, allPosts, "member-group");
 
 const categoriesByEntry = await getTermsForEntries(
 	"posts",

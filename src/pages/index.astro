@@ -7,7 +7,7 @@ import {
 import Base from "../layouts/Base.astro";
 import PostCard from "../components/PostCard.astro";
 import { resolveBlogSiteIdentity } from "../utils/site-identity";
-import { canReadPost } from "../lib/members";
+import { filterReadable } from "../plugins/member-groups/access";
 
 // Limit to what we render (1 featured + 6 grid). The DB does the slicing
 // instead of fetching every post and discarding the tail in JS.
@@ -24,10 +24,8 @@ const { siteTitle, siteTagline } = resolveBlogSiteIdentity(settings);
 
 if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
 
-// Only posts this visitor is allowed to read (member groups, see lib/members).
-const readablePosts = posts.filter((post) =>
-	canReadPost(Astro.locals, post.data.groups),
-);
+// Only posts this visitor is allowed to read (member groups, see the plugin).
+const readablePosts = await filterReadable(Astro.locals, posts, "member-group");
 
 // Trim the lookahead post used to detect overflow
 const visiblePosts = readablePosts.slice(0, POSTS_PER_PAGE);

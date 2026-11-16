@@ -40,15 +40,6 @@
 					"type": "text"
 				},
 				{
-					"slug": "groups",
-					"label": "Visible to",
-					"type": "multiSelect",
-					"validation": {
-						"options": ["public", "all", "family", "friends", "private"]
-					},
-					"defaultValue": ["all"]
-				},
-				{
 					"slug": "place",
 					"label": "Place",
 					"type": "string"
@@ -132,6 +123,31 @@
 				{
 					"slug": "creativity",
 					"label": "Creativity"
+				}
+			]
+		},
+		{
+			"name": "member-group",
+			"label": "Member groups",
+			"labelSingular": "Member group",
+			"hierarchical": false,
+			"collections": ["posts"],
+			"terms": [
+				{
+					"slug": "all",
+					"label": "All members"
+				},
+				{
+					"slug": "family",
+					"label": "Family"
+				},
+				{
+					"slug": "friends",
+					"label": "Friends"
+				},
+				{
+					"slug": "private",
+					"label": "Private"
 				}
 			]
 		}

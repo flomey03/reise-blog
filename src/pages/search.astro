@@ -3,7 +3,7 @@ export const prerender = false;
 
 import { search, getEmDashEntry } from "emdash";
 import Base from "../layouts/Base.astro";
-import { canReadPost } from "../lib/members";
+import { canRead } from "../plugins/member-groups/access";
 
 const query = Astro.url.searchParams.get("q")?.trim() || "";
 
@@ -35,7 +35,7 @@ const visibleResults = (
 				"posts",
 				result.slug ?? result.id,
 			);
-			return entry && canReadPost(Astro.locals, entry.data.groups)
+			return entry && (await canRead(Astro.locals, entry, "member-group"))
 				? result
 				: null;
 		}),

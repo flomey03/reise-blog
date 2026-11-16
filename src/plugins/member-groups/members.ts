@@ -1,20 +1,22 @@
+import { getTaxonomyTerms } from "emdash";
 import { withEmDashRuntime } from "emdash/middleware";
-import { parseGroups, type GroupId } from "../groups";
+import { parseGroups } from "./access";
 
 /**
- * Accounts and their group membership.
- *
- * EmDash has no table for this, so groups live in the `users.data` JSON blob
- * that every user row already carries. This module is the only place that
- * reads or writes it — everything else goes through these functions.
+ * Member records and their assigned groups. Groups live in `users.data.groups`,
+ * which the runtime exposes only through raw database access.
  */
-
 export interface Member {
 	id: string;
 	email: string;
 	name: string | null;
 	role: number;
-	groups: GroupId[];
+	groups: string[];
+}
+
+export interface GroupOption {
+	slug: string;
+	label: string;
 }
 
 export async function listMembers(): Promise<Member[]> {
@@ -24,7 +26,6 @@ export async function listMembers(): Promise<Member[]> {
 			.select(["id", "email", "name", "role", "data"])
 			.orderBy("created_at", "asc")
 			.execute();
-
 		return rows.map((row) => ({
 			id: row.id,
 			email: row.email,
@@ -35,9 +36,18 @@ export async function listMembers(): Promise<Member[]> {
 	});
 }
 
+/** The member-group terms, for the admin checkboxes. */
+export async function listGroups(): Promise<GroupOption[]> {
+	return withEmDashRuntime(async () => {
+		const terms = await getTaxonomyTerms("member-group");
+		return terms.map((term) => ({ slug: term.slug, label: term.label }));
+	});
+}
+
+/** Replace a member's group list. Returns false when the user is gone. */
 export async function setMemberGroups(
 	userId: string,
-	groups: GroupId[],
+	groups: string[],
 ): Promise<boolean> {
 	return withEmDashRuntime(async ({ db }) => {
 		const row = await db
@@ -46,23 +56,20 @@ export async function setMemberGroups(
 			.where("id", "=", userId)
 			.executeTakeFirst();
 		if (!row) return false;
-
 		const data = { ...readData(row.data), groups };
 		await db
 			.updateTable("users")
 			.set({ data: JSON.stringify(data) })
 			.where("id", "=", userId)
 			.execute();
-
 		return true;
 	});
 }
 
-/** The `users.data` column is nullable TEXT holding a JSON object. */
 function readData(raw: string | null): Record<string, unknown> {
 	if (!raw) return {};
 	try {
-		const parsed: unknown = JSON.parse(raw);
+		const parsed = JSON.parse(raw);
 		return parsed && typeof parsed === "object" && !Array.isArray(parsed)
 			? (parsed as Record<string, unknown>)
 			: {};

@@ -15,7 +15,8 @@ import PostCard from "../../components/PostCard.astro";
 import { formatDate } from "../../utils/locale";
 import { getReadingTime } from "../../utils/reading-time";
 import { resolveBlogSiteIdentity } from "../../utils/site-identity";
-import { canReadPost, isMember } from "../../lib/members";
+import { canRead, filterReadable } from "../../plugins/member-groups/access";
+import { isMember } from "../../plugins/member-groups/roles";
 import "../../styles/prose.css";
 
 const slug = decodeSlug(Astro.params.slug);
@@ -30,8 +31,8 @@ if (!post) {
 	return Astro.rewrite("/404");
 }
 
-// Posts carry an audience in `groups`; see src/lib/members.ts.
-if (!canReadPost(Astro.locals, post.data.groups)) {
+// Posts carry an audience as `member-group` terms; no term = public.
+if (!(await canRead(Astro.locals, post, "member-group"))) {
 	if (!isMember(Astro.locals)) {
 		const next = encodeURIComponent(Astro.url.pathname);
 		return Astro.redirect(`/login?next=${next}`);
@@ -90,10 +91,13 @@ const { entries: recentPosts, cacheHint: recentPostsCacheHint } =
 		limit: 4,
 	});
 if (Astro.cache?.enabled) Astro.cache.set(recentPostsCacheHint);
-const otherPosts = recentPosts
-	.filter((p) => p.id !== post.id)
-	.filter((p) => canReadPost(Astro.locals, p.data.groups))
-	.slice(0, 3);
+const otherPosts = (
+	await filterReadable(
+		Astro.locals,
+		recentPosts.filter((p) => p.id !== post.id),
+		"member-group",
+	)
+).slice(0, 3);
 
 // Single batched query for related-posts tags, rather than one
 // getEntryTerms() call per related post.

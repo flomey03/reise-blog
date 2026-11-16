@@ -1,9 +1,13 @@
-import { definePlugin } from "emdash";
+import { definePlugin, definePluginRoute } from "emdash";
+import { parseGroups } from "./access";
+import { listGroups, listMembers, setMemberGroups } from "./members";
 
 /**
- * Runtime half of the plugin: EmDash imports this module at build time and
- * calls `createPlugin()`. Only the admin surface is used — the member data
- * lives in `users.data.groups`, not in plugin storage.
+ * Member groups plugin.
+ *
+ * Groups are a `member-group` taxonomy; posts opt into access by carrying its
+ * terms (no term = public). This plugin owns the roles helpers, the access
+ * checks, and the admin page + route that assign groups to members.
  */
 export function createPlugin() {
 	return definePlugin({
@@ -14,6 +18,32 @@ export function createPlugin() {
 		admin: {
 			entry: "/src/plugins/member-groups/admin.tsx",
 			pages: [{ path: "/members", label: "Members" }],
+		},
+		routes: {
+			members: definePluginRoute({
+				methods: ["GET", "POST"],
+				permission: "users:manage",
+				handler: async (ctx) => {
+					if (ctx.request.method === "POST") {
+						const input = (ctx.input ?? {}) as {
+							userId?: string;
+							groups?: unknown;
+						};
+						if (!input.userId) return { ok: false };
+						const ok = await setMemberGroups(
+							input.userId,
+							parseGroups(input.groups),
+						);
+						return { ok };
+					}
+
+					const [members, groups] = await Promise.all([
+						listMembers(),
+						listGroups(),
+					]);
+					return { members, groups };
+				},
+			}),
 		},
 	});
 }
