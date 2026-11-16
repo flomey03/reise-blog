@@ -6,7 +6,9 @@
 .auth {
 	display: grid;
 	gap: var(--spacing-6);
-	justify-items: start;
+	width: 100%;
+	max-width: 32rem;
+	margin-inline: auto;
 }
 
 .auth-card {

@@ -4,6 +4,7 @@ import { withEmDashRuntime } from "emdash/middleware";
 import { MEMBER_ROLE } from "../../plugins/member-groups/roles";
 import { sendLoginLink } from "../../lib/server/login-link";
 import { createRateLimiter } from "../../lib/server/rate-limit";
+import { siteOrigin } from "../../lib/server/site-origin";
 import {
 	EMAIL_PATTERN,
 	jsonResponse,
@@ -43,7 +44,7 @@ export const POST: APIRoute = async ({ request, url, clientAddress }) => {
 
 	await sendLoginLink({
 		email,
-		origin: url.origin,
+		origin: siteOrigin(url),
 		siteName: title ?? "Blog",
 	}).catch((error) => {
 		console.error("[signup] failed to send sign-in link:", error);

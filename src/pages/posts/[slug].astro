@@ -17,6 +17,7 @@ import { getReadingTime } from "../../utils/reading-time";
 import { resolveBlogSiteIdentity } from "../../utils/site-identity";
 import { canRead, filterReadable } from "../../plugins/member-groups/access";
 import { isMember } from "../../plugins/member-groups/roles";
+import { siteOrigin } from "../../lib/server/site-origin";
 import "../../styles/prose.css";
 
 const slug = decodeSlug(Astro.params.slug);
@@ -51,7 +52,7 @@ function getImageUrl(img: unknown): string | undefined {
 	if (typeof image.src === "string" && image.src) {
 		return image.src.startsWith("http")
 			? image.src
-			: `${Astro.url.origin}${image.src}`;
+			: `${siteOrigin(Astro.url)}${image.src}`;
 	}
 	// Build from storageKey for local images
 	const meta = image.meta as Record<string, unknown> | undefined;
@@ -59,7 +60,7 @@ function getImageUrl(img: unknown): string | undefined {
 		(typeof meta?.storageKey === "string" ? meta.storageKey : undefined) ||
 		(typeof image.id === "string" ? image.id : undefined);
 	if (storageKey) {
-		return `${Astro.url.origin}/_emdash/api/media/file/${storageKey}`;
+		return `${siteOrigin(Astro.url)}/_emdash/api/media/file/${storageKey}`;
 	}
 	return undefined;
 }
@@ -69,7 +70,7 @@ const { siteTitle } = resolveBlogSiteIdentity(await getSiteSettings());
 // Generate SEO meta from content
 const seo = getSeoMeta(post, {
 	siteTitle,
-	siteUrl: Astro.url.origin,
+	siteUrl: siteOrigin(Astro.url),
 	path: Astro.url.pathname.replace(/\/$/, ""),
 	defaultOgImage: featuredImageUrl,
 });
