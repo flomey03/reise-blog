@@ -3,7 +3,10 @@
 allowBuilds:
   esbuild: true
   sharp: true
-  workerd: false
+  workerd: true
+
+fetchTimeout: 300000
+fetchRetries: 5
 
 # Supply-chain hardening: cooldown on brand-new releases (EmDash exempt)
 # and no non-registry transitive sources. (No trustPolicy: no-downgrade --

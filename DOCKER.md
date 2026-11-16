@@ -46,6 +46,42 @@ docker compose down              # stoppen (Volume bleibt)
 docker compose up -d --build     # nach git pull: neu bauen und starten
 ```
 
+## Plugin-Sandbox (`workerd`)
+
+Sandboxed Plugins (etwa aus der Registry) laufen in `workerd`. Das
+`workerd`-Paket ist nur ein JS-Shim; das eigentliche Binärprogramm kommt aus
+dem plattformspezifischen optionalen Paket `@cloudflare/workerd-linux-*`.
+Fehlt es im Image, antwortet jede Plugin-Route mit:
+
+```text
+Plugin sandbox unavailable for …: workerd failed to start
+```
+
+Der Build prüft das jetzt mit `workerd --version` und bricht ab, bevor ein
+kaputtes Image entsteht. Tritt der Fehler trotzdem im laufenden Container
+auf, zuerst das echte Log ansehen (die Route-Meldung verschluckt die
+Ursache):
+
+```bash
+docker compose logs emdash | grep -A10 'emdash:workerd'
+
+# Denselben Pfad prüfen, den der Sandbox-Runner benutzt:
+docker compose exec emdash node -e "
+const p = require('path');
+const b = p.join(p.dirname(require.resolve('workerd')), '..', 'bin', 'workerd');
+require('child_process').execFileSync(b, ['--version'], { stdio: 'inherit' });
+"
+```
+
+Letzteres muss eine Versionsnummer ausgeben. Wenn nicht, das Image ohne
+Cache neu bauen — `node_modules` steckt in einer Docker-Layer, ein einmal
+kaputt gebautes Image würde sonst wiederverwendet:
+
+```bash
+docker compose build --no-cache emdash
+docker compose up -d
+```
+
 ## Schlüssel (`EMDASH_ENCRYPTION_KEY`)
 
 Der Schlüssel verschlüsselt Plugin-Secrets und das SMTP-Passwort **in der
