@@ -3,6 +3,7 @@ import { getI18n } from "../i18n";
 import type { ContentEntry, InferCollectionData } from "emdash";
 import { Image } from "emdash/ui";
 import Byline from "./Byline.astro";
+import PostCover from "./PostCover.astro";
 import { formatDate } from "../utils/locale";
 import { getReadingTime } from "../utils/reading-time";
 
@@ -53,7 +54,7 @@ const sizes = {
 					/>
 				</div>
 			) : (
-				<div class="post__placeholder" />
+				<PostCover seed={post.id} />
 			)
 		}
 	</a>
@@ -182,16 +183,8 @@ const sizes = {
 		scale: 1.03;
 	}
 
-	.post__placeholder {
-		position: absolute;
-		inset: 0;
-		background-image: radial-gradient(
-			circle,
-			var(--color-border-strong) 1px,
-			transparent 1.5px
-		);
-		background-size: 14px 14px;
-		mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+	.post:has(.post__link:hover, .post__media:hover) :global(.post__cover) {
+		scale: 1.03;
 	}
 
 	/* Text */
