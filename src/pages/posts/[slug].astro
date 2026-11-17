@@ -257,11 +257,15 @@ const hasHeadings = (post.data.content ?? []).some(
 						<PortableText value={post.data.content} />
 					</div>
 
-					<section class="post-comments" aria-labelledby="comments-title">
-						<h2 id="comments-title" class="eyebrow">{t.post.discussion}</h2>
-						<Comments collection="posts" contentId={post.data.id} threaded />
-						<CommentForm collection="posts" contentId={post.data.id} />
-					</section>
+					{
+						isMember(Astro.locals) && (
+							<section class="post-comments" aria-labelledby="comments-title">
+								<h2 id="comments-title" class="eyebrow">{t.post.discussion}</h2>
+								<Comments collection="posts" contentId={post.data.id} threaded />
+								<CommentForm collection="posts" contentId={post.data.id} />
+							</section>
+						)
+					}
 				</div>
 
 				<div class="post-rail">

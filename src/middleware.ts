@@ -12,7 +12,10 @@ import { ADMIN_PANEL_MIN_ROLE } from "./plugins/member-groups/roles";
  *    below Contributor, apart from the two public bits the site itself uses.
  * 2. The site is a members area. Anonymous visitors are sent to the login page,
  *    which doubles as the "you are not signed in" landing page and remembers
- *    where they wanted to go.
+ *    where they wanted to go. Only the two detail routes are reachable: they
+ *    fetch the entry first and apply the audience rule themselves (canRead),
+ *    so an entry with no member-group is public. Everything else — archives,
+ *    search, feeds, admin — stays closed here.
  */
 
 const ADMIN_PREFIX = "/_emdash/admin";
@@ -40,9 +43,18 @@ const PUBLIC_PATHS = new Set([
 
 const PUBLIC_PREFIXES = ["/api/", "/_astro/", "/fonts/", "/_emdash/api/media/"];
 
+/**
+ * Detail routes decide access for themselves after loading the entry. Leaving
+ * them through here is what makes "no member-group = public" actually work for
+ * anonymous visitors; every other content route stays behind the login gate.
+ */
+const PUBLIC_DETAIL_PREFIXES = ["/pages/", "/posts/"];
+
 function isPublic(pathname: string): boolean {
 	if (PUBLIC_PATHS.has(pathname)) return true;
 	if (PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return true;
+	if (PUBLIC_DETAIL_PREFIXES.some((prefix) => pathname.startsWith(prefix)))
+		return true;
 	return pathname.startsWith("/_emdash/api/");
 }
 

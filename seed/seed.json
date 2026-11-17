@@ -191,7 +191,8 @@
       "labelSingular": "Mitgliedergruppe",
       "hierarchical": false,
       "collections": [
-        "posts"
+        "posts",
+        "pages"
       ],
       "terms": [
         {
@@ -242,6 +243,16 @@
           "type": "custom",
           "label": "Über",
           "url": "/pages/about"
+        },
+        {
+          "type": "custom",
+          "label": "Impressum",
+          "url": "/pages/impressum"
+        },
+        {
+          "type": "custom",
+          "label": "Datenschutz",
+          "url": "/pages/datenschutz"
         }
       ]
     }
@@ -1794,6 +1805,74 @@
                 }
               ],
               "_key": "k177"
+            }
+          ]
+        }
+      },
+      {
+        "id": "impressum",
+        "slug": "impressum",
+        "status": "published",
+        "data": {
+          "title": "Impressum",
+          "content": [
+            {
+              "_type": "block",
+              "style": "h2",
+              "_key": "impressum-h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "impressum-h2-0",
+                  "text": "Angaben gemäß § 5 DDG"
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "_key": "impressum-text",
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "impressum-text-0",
+                  "text": "PLATZHALTER – bitte vor dem Livegang durch die echten Angaben ersetzen: Name und Anschrift, Kontaktmöglichkeit sowie gegebenenfalls Register und Umsatzsteuer-Identifikationsnummer. Diese Seite ist bewusst ohne Mitgliedergruppe und daher für alle öffentlich."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "datenschutz",
+        "slug": "datenschutz",
+        "status": "published",
+        "data": {
+          "title": "Datenschutz",
+          "content": [
+            {
+              "_type": "block",
+              "style": "h2",
+              "_key": "datenschutz-h2",
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "datenschutz-h2-0",
+                  "text": "Datenschutzerklärung"
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "style": "normal",
+              "_key": "datenschutz-text",
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "datenschutz-text-0",
+                  "text": "PLATZHALTER – bitte vor dem Livegang durch eine echte Datenschutzerklärung ersetzen. Auch diese Seite ist ohne Mitgliedergruppe und damit auch auf der Anmeldeseite ohne Login lesbar."
+                }
+              ]
             }
           ]
         }

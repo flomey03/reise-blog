@@ -6,6 +6,8 @@ import {
 	getSiteSettings,
 } from "emdash";
 import { PortableText } from "emdash/ui";
+import { canRead } from "../../plugins/member-groups/access";
+import { isMember } from "../../plugins/member-groups/roles";
 import Base from "../../layouts/Base.astro";
 import { resolveBlogSiteIdentity } from "../../utils/site-identity";
 import { siteOrigin } from "../../lib/server/site-origin";
@@ -21,6 +23,16 @@ const { entry: page, cacheHint } = await getEmDashEntry("pages", slug);
 
 if (!page) {
 	return Astro.rewrite("/404");
+}
+
+// Pages carry an audience as `member-group` terms (now also enabled for this
+// collection); no term = public. This runs on the server before any HTML is
+// sent, so a restricted page never reaches a visitor who may not read it.
+if (!(await canRead(Astro.locals, page, "member-group", "pages"))) {
+	if (!isMember(Astro.locals)) {
+		return Astro.redirect(`/login?next=${encodeURIComponent(Astro.url.pathname)}`);
+	}
+	return Astro.rewrite("/no-access");
 }
 
 if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
