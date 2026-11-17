@@ -1,4 +1,5 @@
 ---
+import { getI18n } from "../../i18n";
 import { getEmDashCollection, getTermsForEntries } from "emdash";
 import Base from "../../layouts/Base.astro";
 import PostCard from "../../components/PostCard.astro";
@@ -19,6 +20,7 @@ const {
 });
 
 const posts = await filterReadable(Astro.locals, fetchedPosts, "member-group");
+const { t } = getI18n(Astro.preferredLocale);
 
 if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
 
@@ -37,12 +39,12 @@ const postsWithTags = posts.map((post) => ({
 }));
 ---
 
-<Base title="All Posts" description="Browse all blog posts">
+<Base title={t.postsIndex.title} description={t.postsIndex.description}>
 	<header class="band intro">
 		<div class="frame">
-			<p class="eyebrow">Archive</p>
-			<h1 class="intro__title">All Posts</h1>
-			<p class="intro__lead">Every post, newest first.</p>
+			<p class="eyebrow">{t.postsIndex.eyebrow}</p>
+			<h1 class="intro__title">{t.postsIndex.title}</h1>
+			<p class="intro__lead">{t.postsIndex.lead}</p>
 		</div>
 	</header>
 
@@ -52,17 +54,17 @@ const postsWithTags = posts.map((post) => ({
 				posts.length === 0 ? (
 					<div class="empty-state">
 						<h2 class="empty-state__title">
-							{cursor ? "No more posts" : "No posts yet"}
+							{cursor ? t.common.noMorePosts : t.postsIndex.noPosts}
 						</h2>
 						<p class="empty-state__text">
 							{cursor
-								? "You have reached the end of the archive."
-								: "Published posts will show up here."}
+								? t.postsIndex.end
+								: t.postsIndex.noPostsLead}
 						</p>
 						{cursor && (
 							<div class="empty-state__actions">
 								<a href="/posts" class="btn btn--ghost">
-									First page
+									{t.common.firstPage}
 								</a>
 							</div>
 						)}

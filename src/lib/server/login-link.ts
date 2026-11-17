@@ -1,5 +1,6 @@
 import { generateTokenWithHash } from "@emdash-cms/auth";
 import { withEmDashRuntime } from "emdash/middleware";
+import { getI18n } from "../../i18n";
 
 /**
  * Sign-in links, issued by us instead of by the CMS.
@@ -21,6 +22,8 @@ export interface LoginLinkInput {
 	siteName: string;
 	/** Where to continue after sign-in. Must be a local path. */
 	next?: string | null;
+	/** Visitor locale from the browser; falls back to the default. */
+	locale?: string;
 }
 
 /**
@@ -33,7 +36,10 @@ export async function sendLoginLink({
 	origin,
 	siteName,
 	next,
+	locale,
 }: LoginLinkInput): Promise<boolean> {
+	const { t } = getI18n(locale);
+
 	return withEmDashRuntime(async ({ db, email: mailer }) => {
 		if (!mailer) return false;
 
@@ -72,9 +78,9 @@ export async function sendLoginLink({
 		await mailer.send(
 			{
 				to: user.email,
-				subject: `Sign in to ${siteName}`,
-				text: `Open this link to sign in:\n\n${url}\n\nThe link is valid for 15 minutes and can be used once. If you did not request it, ignore this email.`,
-				html: `<p>Open this link to sign in:</p><p><a href="${url}">Sign in</a></p><p>The link is valid for 15 minutes and can be used once. If you did not request it, ignore this email.</p>`,
+				subject: t.loginEmail.subject(siteName),
+				text: t.loginEmail.text(String(url)),
+				html: t.loginEmail.html(String(url)),
 			},
 			"system",
 		);

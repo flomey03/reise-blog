@@ -9,7 +9,7 @@ import {
 import { createPublicPageContext } from "emdash/page";
 import LiveSearch from "emdash/ui/search";
 import { Font } from "astro:assets";
-import { getSiteLocale } from "../utils/locale";
+import { getI18n } from "../i18n";
 import { resolveBlogSiteIdentity } from "../utils/site-identity";
 import { ADMIN_PANEL_MIN_ROLE, currentRole } from "../plugins/member-groups/roles";
 import "../styles/tokens.css";
@@ -104,13 +104,13 @@ function navCurrent(url: string): "page" | "true" | undefined {
 	return undefined;
 }
 
-const lang = getSiteLocale() ?? "en";
+const { locale, t } = getI18n(Astro.preferredLocale);
 const monogram = [...siteTitle.trim()][0]?.toUpperCase() ?? "";
 const year = new Date().getFullYear();
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={locale}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -159,7 +159,7 @@ const year = new Date().getFullYear();
 				</a>
 				{
 					menuItems.length > 0 && (
-						<nav class="site-nav" aria-label="Main">
+						<nav class="site-nav" aria-label={t.base.main}>
 							<ul>
 								{menuItems.map((item) => (
 									<li>
@@ -182,7 +182,7 @@ const year = new Date().getFullYear();
 					)
 				}
 				<div class="site-header__actions">
-					<div class="site-search" role="search" aria-label="Site">
+					<div class="site-search" role="search" aria-label={t.base.site}>
 						<svg
 							class="site-search__icon"
 							viewBox="0 0 24 24"
@@ -196,7 +196,7 @@ const year = new Date().getFullYear();
 							></path></svg
 						>
 						<LiveSearch
-							placeholder="Search"
+							placeholder={t.common.search}
 							class="site-search__field"
 							inputClass="site-search-input"
 							resultsClass="site-search-results"
@@ -210,7 +210,7 @@ const year = new Date().getFullYear();
 					<a
 						href="/search"
 						class="icon-btn site-search-link"
-						aria-label="Search"
+						aria-label={t.common.search}
 					>
 						<svg
 							viewBox="0 0 24 24"
@@ -229,18 +229,18 @@ const year = new Date().getFullYear();
 							<div class="nav-account">
 								{mayUseAdmin && (
 									<a href="/_emdash/admin" class="btn btn--ghost btn--sm">
-										Admin
+										{t.base.admin}
 									</a>
 								)}
 								<form method="post" action="/api/logout" class="nav-logout">
 									<button class="btn btn--ghost btn--sm" type="submit">
-										Sign out
+										{t.common.signOut}
 									</button>
 								</form>
 							</div>
 						) : (
 							<a href="/login" class="btn btn--ghost btn--sm nav-login">
-								Sign in
+								{t.common.signIn}
 							</a>
 						)
 					}
@@ -295,7 +295,7 @@ const year = new Date().getFullYear();
 					menuItems.length > 0 && (
 						<nav class="site-footer__col" aria-labelledby="footer-navigate">
 							<h2 id="footer-navigate" class="eyebrow">
-								Navigate
+								{t.base.navigate}
 							</h2>
 							<ul class="site-footer__links">
 								{menuItems.map((item) => (
@@ -324,15 +324,15 @@ const year = new Date().getFullYear();
 			<div class="band site-footer__bottom">
 				<div class="frame site-footer__bottom-inner">
 					<p class="site-footer__meta">
-						{`© ${year} ${siteTitle}.`} Powered by{" "}
+						{`© ${year} ${siteTitle}.`} {t.base.poweredBy}{" "}
 						<a href="https://emdashcms.com">EmDash</a>
 					</p>
-					<div class="theme-switcher" role="group" aria-label="Color theme">
+					<div class="theme-switcher" role="group" aria-label={t.base.colorTheme}>
 						<button
 							type="button"
 							class="theme-btn"
 							data-theme="light"
-							aria-label="Light"
+							aria-label={t.base.light}
 						>
 							<svg
 								viewBox="0 0 24 24"
@@ -351,7 +351,7 @@ const year = new Date().getFullYear();
 							type="button"
 							class="theme-btn"
 							data-theme="dark"
-							aria-label="Dark"
+							aria-label={t.base.dark}
 						>
 							<svg
 								viewBox="0 0 24 24"
@@ -370,7 +370,7 @@ const year = new Date().getFullYear();
 							type="button"
 							class="theme-btn"
 							data-theme="system"
-							aria-label="System"
+							aria-label={t.base.system}
 						>
 							<svg
 								viewBox="0 0 24 24"

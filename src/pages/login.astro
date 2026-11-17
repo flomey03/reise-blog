@@ -1,4 +1,5 @@
 ---
+import { getI18n } from "../i18n";
 import Base from "../layouts/Base.astro";
 import AuthForm from "../components/AuthForm.astro";
 import { isAdmin } from "../plugins/member-groups/roles";
@@ -10,15 +11,16 @@ const user = Astro.locals.user;
 const linkError = Astro.url.searchParams.get("error") === "link";
 const next = Astro.url.searchParams.get("next");
 const admin = isAdmin(Astro.locals);
+const { t } = getI18n(Astro.preferredLocale);
 ---
 
-<Base title="Sign in" description="Sign in to read every post.">
+<Base title={t.login.title} description={t.login.description}>
 	<header class="band intro">
 		<div class="frame">
-			<p class="eyebrow">Members</p>
-			<h1 class="intro__title">Sign in</h1>
+			<p class="eyebrow">{t.login.eyebrow}</p>
+			<h1 class="intro__title">{t.login.title}</h1>
 			<p class="intro__lead">
-        Schön, dass du bei unserem Reiseblog vorbeischaust!! Bitte gib hier deine Email an, dann schicken wir dir einen Zugangslink :)
+			{t.login.lead}
 			</p>
 		</div>
 	</header>
@@ -30,16 +32,16 @@ const admin = isAdmin(Astro.locals);
 					{
 						user ? (
 							<>
-								<p class="eyebrow">Signed in</p>
+								<p class="eyebrow">{t.login.signedIn}</p>
 								<p class="auth-text">
-									You are signed in as <strong>{user.email}</strong>.
+									{t.login.signedInAs} <strong>{user.email}</strong>.
 								</p>
 								<div class="auth-actions">
-									<a class="btn" href="/">Back to the site</a>
-									{admin && <a class="auth-admin-link" href="/_emdash/admin/plugins/member-groups/members">Manage members</a>}
+									<a class="btn" href="/">{t.login.backToSite}</a>
+									{admin && <a class="auth-admin-link" href="/_emdash/admin/plugins/member-groups/members">{t.login.manageMembers}</a>}
 								</div>
 								<form method="post" action="/api/logout" class="auth-logout">
-									<button class="btn btn--ghost" type="submit">Sign out</button>
+									<button class="btn btn--ghost" type="submit">{t.common.signOut}</button>
 								</form>
 							</>
 						) : (
@@ -47,21 +49,21 @@ const admin = isAdmin(Astro.locals);
 								{
 									next && (
 										<p class="auth-feedback">
-											This area is for members. Sign in to continue.
+											{t.login.memberOnly}
 										</p>
 									)
 								}
 								{
 									linkError && (
 										<p class="auth-feedback" data-state="error" role="alert">
-											This link has expired or was already used. Request a new one.
+											{t.login.linkExpired}
 										</p>
 									)
 								}
 								<AuthForm
 									endpoint="/api/login"
-									buttonLabel="Send sign-in link"
-									successMessage="If your address can sign in, the link is on its way. Check your inbox (and spam folder)."
+									buttonLabel={t.login.button}
+									successMessage={t.login.success}
 									next={next}
 								/>
 							</>

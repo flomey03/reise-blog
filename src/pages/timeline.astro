@@ -5,12 +5,15 @@ import {
 	getTermsForEntries,
 } from "emdash";
 import { Image } from "emdash/ui";
+import { getI18n } from "../i18n";
 import Base from "../layouts/Base.astro";
 import { formatDate } from "../utils/locale";
-import { formatReadingTime, getReadingTime } from "../utils/reading-time";
+import { getReadingTime } from "../utils/reading-time";
 import { filterReadable } from "../plugins/member-groups/access";
 
 export const prerender = false;
+
+const { t } = getI18n(Astro.preferredLocale);
 
 /**
  * Timeline: every post this visitor may read, oldest first, grouped by the
@@ -61,7 +64,7 @@ const tracks: Track[] = categoriesResult.data.map((term) => ({
 
 const uncategorised: Track = {
 	slug: "uncategorised",
-	label: "Uncategorised",
+	label: t.timeline.uncategorised,
 	posts: [],
 };
 
@@ -71,7 +74,7 @@ function toEntry(post: (typeof posts)[number]) {
 		post,
 		year: publishedAt ? String(publishedAt.getFullYear()) : "—",
 		date: publishedAt ? formatDate(publishedAt, "short") : "",
-		readingTime: formatReadingTime(getReadingTime(post.data.content)),
+		readingTime: t.common.minRead(getReadingTime(post.data.content)),
 		image: post.data.featured_image ?? undefined,
 	};
 }
@@ -99,19 +102,18 @@ const lockedPosts = allPosts.length - posts.length;
 ---
 
 <Base
-	title="Timeline"
-	description="Every post in chronological order, grouped by category."
+	title={t.timeline.title}
+	description={t.timeline.description}
 >
 	<header class="band intro">
 		<div class="frame">
-			<p class="eyebrow">Journey</p>
-			<h1 class="intro__title">Timeline</h1>
+			<p class="eyebrow">{t.timeline.eyebrow}</p>
+			<h1 class="intro__title">{t.timeline.title}</h1>
 			<p class="intro__lead">
-				Every post in chronological order, grouped by category.
+				{t.timeline.lead}
 			</p>
 			<p class="timeline-count">
-				{totalPosts}
-				{totalPosts === 1 ? " post" : " posts"}
+				{t.common.postsCount(totalPosts)}
 			</p>
 		</div>
 	</header>
@@ -123,11 +125,11 @@ const lockedPosts = allPosts.length - posts.length;
 					<div class="empty-state">
 						{lockedPosts > 0 ? (
 							<p>
-								The timeline is for members.{" "}
-								<a href="/login?next=/timeline">Sign in</a> to see it.
+								{t.timeline.membersOnly}{" "}
+								<a href="/login?next=/timeline">{t.common.signIn}</a> {t.timeline.signInToSee}
 							</p>
 						) : (
-							<p>No posts yet.</p>
+							<p>{t.home.noPosts}</p>
 						)}
 					</div>
 				) : (
@@ -138,7 +140,7 @@ const lockedPosts = allPosts.length - posts.length;
 									{track.label}
 								</h2>
 								<a class="arrow-link" href={`/category/${track.slug}`}>
-									Only this category
+									{t.timeline.onlyThisCategory}
 								</a>
 							</div>
 

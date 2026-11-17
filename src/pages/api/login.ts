@@ -26,7 +26,7 @@ const GENERIC = { ok: true };
  * when their domain is allowlisted, then the same link. Everyone sees the same
  * response, so the endpoint reveals nothing about which addresses exist.
  */
-export const POST: APIRoute = async ({ request, url, clientAddress }) => {
+export const POST: APIRoute = async ({ request, url, clientAddress, preferredLocale }) => {
 	if (!limiter.attempt(clientAddress ?? "unknown")) return jsonResponse(GENERIC);
 
 	const body = await readJsonBody(request);
@@ -46,6 +46,7 @@ export const POST: APIRoute = async ({ request, url, clientAddress }) => {
 		origin: siteOrigin(url),
 		siteName: title ?? "Blog",
 		next: safeNext(readString(body, "next")),
+		locale: preferredLocale,
 	}).catch((error) => {
 		console.error("[login] failed to send sign-in link:", error);
 	});

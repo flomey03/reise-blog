@@ -1,4 +1,6 @@
 ---
+import { getI18n } from "../i18n";
+
 /**
  * Email form for the member login page: collects an address and posts it to
  * the site's login endpoint. Behaviour comes from data attributes.
@@ -14,6 +16,7 @@ interface Props {
 }
 
 const { endpoint, buttonLabel, successMessage, next } = Astro.props;
+const { t } = getI18n(Astro.preferredLocale);
 ---
 
 <form
@@ -21,12 +24,12 @@ const { endpoint, buttonLabel, successMessage, next } = Astro.props;
 	data-endpoint={endpoint}
 	data-success={successMessage}
 	data-next={next ?? ""}
-	data-empty="Enter an email address."
-	data-error="That did not work. Please try again in a moment."
+	data-empty={t.authForm.empty}
+	data-error={t.authForm.error}
 	novalidate
 >
 	<div class="field">
-		<label for="auth-email">Email address</label>
+		<label for="auth-email">{t.authForm.label}</label>
 		<input
 			id="auth-email"
 			name="email"
@@ -34,7 +37,7 @@ const { endpoint, buttonLabel, successMessage, next } = Astro.props;
 			required
 			autocomplete="email"
 			inputmode="email"
-			placeholder="you@example.com"
+			placeholder={t.authForm.placeholder}
 		/>
 	</div>
 

@@ -1,10 +1,13 @@
 ---
 import { getEmDashCollection } from "emdash";
+import { getI18n } from "../i18n";
 import Base from "../layouts/Base.astro";
 import { formatDate } from "../utils/locale";
 import { filterReadable } from "../plugins/member-groups/access";
 
 export const prerender = false;
+
+const { t } = getI18n(Astro.preferredLocale);
 
 /**
  * Map overview: every readable post that carries coordinates becomes a pin.
@@ -64,19 +67,18 @@ for (const post of readable) {
 ---
 
 <Base
-	title="Map"
-	description="Every post with coordinates on one map."
+	title={t.map.title}
+	description={t.map.description}
 >
 	<header class="band intro">
 		<div class="frame">
-			<p class="eyebrow">Browse</p>
-			<h1 class="intro__title">Map</h1>
+			<p class="eyebrow">{t.map.eyebrow}</p>
+			<h1 class="intro__title">{t.map.heading}</h1>
 			<p class="intro__lead">
-				Every post with a place becomes a pin. Click a pin to open the post.
+				{t.map.lead}
 			</p>
 			<p class="map-count">
-				{pins.length}
-				{pins.length === 1 ? " place" : " places"}
+				{t.common.placesCount(pins.length)}
 			</p>
 		</div>
 	</header>
@@ -87,21 +89,21 @@ for (const post of readable) {
 				<div class="empty-state">
 					{lockedCount > 0 ? (
 						<p>
-							The map is for members.{" "}
-							<a href="/login?next=/map">Sign in</a> to see the places.
+							{t.map.membersOnly}{" "}
+							<a href="/login?next=/map">{t.common.signIn}</a> {t.map.signInToSee}
 						</p>
 					) : (
-						<p>No post has coordinates yet.</p>
+						<p>{t.map.empty}</p>
 					)}
 					{withoutLocation.length > 0 && (
 						<p>
-							{withoutLocation.length} posts have no place yet — add latitude and longitude in the post editor.
+							{t.map.withoutLocation(withoutLocation.length)}
 						</p>
 					)}
 				</div>
 			) : (
 				<>
-					<div id="map" class="map" role="application" aria-label="Map of posts" />
+					<div id="map" class="map" role="application" aria-label={t.map.ariaLabel} />
 
 					<ul class="places">
 						{pins.map((pin) => (

@@ -1,4 +1,5 @@
 ---
+import { getI18n } from "../../i18n";
 import {
 	getTaxonomyTermsWithCacheHint,
 	getEmDashCollection,
@@ -19,6 +20,7 @@ const term = slug ? termsResult.data.find((item) => item.slug === slug) : null;
 if (!term) {
 	return Astro.rewrite("/404");
 }
+const { t } = getI18n(Astro.preferredLocale);
 
 const cursor = Astro.url.searchParams.get("cursor") || undefined;
 const {
@@ -53,18 +55,18 @@ const filteredPosts = (
 }));
 ---
 
-<Base title={`${term.label} posts`} description={`All posts in ${term.label}`}>
+<Base title={t.category.title(term.label)} description={t.category.description(term.label)}>
 	<header class="band intro">
 		<div class="frame archive-intro">
 			<div class="archive-intro__text">
-				<p class="eyebrow">Category</p>
+				<p class="eyebrow">{t.category.eyebrow}</p>
 				<h1 class="intro__title">{term.label}</h1>
 				<p class="intro__lead">
-					{term.description || `Posts filed under ${term.label}, newest first.`}
+					{term.description || t.category.fallbackDescription(term.label)}
 				</p>
 			</div>
 			<a href="/posts" class="arrow-link">
-				All posts
+				{t.common.allPosts}
 				<svg
 					viewBox="0 0 24 24"
 					fill="none"
@@ -103,19 +105,19 @@ const filteredPosts = (
 				) : (
 					<div class="empty-state">
 						<h2 class="empty-state__title">
-							{cursor ? "No more posts" : "Nothing here yet"}
+							{cursor ? t.common.noMorePosts : t.category.emptyTitle}
 						</h2>
 						<p class="empty-state__text">
 							{cursor
-								? "This page is past the last post."
-								: `No posts have been filed under ${term.label} so far.`}
+								? t.category.endLead
+								: t.category.emptyLead(term.label)}
 						</p>
 						<div class="empty-state__actions">
 							<a
 								href={cursor ? `/category/${term.slug}` : "/posts"}
 								class="btn btn--ghost"
 							>
-								{cursor ? "Back to the first page" : "Browse all posts"}
+								{cursor ? t.common.backToFirstPage : t.common.browseAllPosts}
 							</a>
 						</div>
 					</div>

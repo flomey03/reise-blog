@@ -1,11 +1,13 @@
 ---
 export const prerender = false;
 
+import { getI18n } from "../i18n";
 import { search, getEmDashEntry } from "emdash";
 import Base from "../layouts/Base.astro";
 import { canRead } from "../plugins/member-groups/access";
 
 const query = Astro.url.searchParams.get("q")?.trim() || "";
+const { t } = getI18n(Astro.preferredLocale);
 
 // Use the FTS-backed search() API instead of loading every post and
 // filtering in JS. FTS scales as the post count grows, returns ranked
@@ -43,7 +45,7 @@ const visibleResults = (
 ).filter((result) => result !== null);
 
 const rows = visibleResults.map((result) => {
-	const title = result.title ?? "Untitled";
+	const title = result.title ?? t.common.untitled;
 	const snippetIsTitle =
 		result.snippet?.replaceAll("<mark>", "").replaceAll("</mark>", "") ===
 		escapeHtml(title);
@@ -55,27 +57,25 @@ const rows = visibleResults.map((result) => {
 	};
 });
 
-const countLabel = nextCursor
-	? `Top ${rows.length} results`
-	: `${rows.length} ${rows.length === 1 ? "result" : "results"}`;
+const countLabel = t.search.count(rows.length, Boolean(nextCursor));
 ---
 
 <Base
-	title={query ? `Search: ${query}` : "Search"}
-	description="Search blog posts"
+	title={t.search.title(query)}
+	description={t.search.description}
 >
 	<header class="band intro">
 		<div class="frame">
-			<p class="eyebrow">Search</p>
-			<h1 class="intro__title">What are you looking for?</h1>
+			<p class="eyebrow">{t.search.eyebrow}</p>
+			<h1 class="intro__title">{t.search.question}</h1>
 			<form
 				method="get"
 				action="/search"
 				role="search"
-				aria-label="Posts"
+				aria-label={t.search.postsLabel}
 				class="search-form"
 			>
-				<label for="search-query" class="sr-only">Search posts</label>
+				<label for="search-query" class="sr-only">{t.common.searchPosts}</label>
 				<div class="search-field">
 					<svg
 						class="search-field__icon"
@@ -95,17 +95,17 @@ const countLabel = nextCursor
 						type="search"
 						name="q"
 						value={query}
-						placeholder="Search posts"
+						placeholder={t.common.searchPosts}
 						autofocus={!query}
 					/>
-					<button type="submit" class="btn search-field__submit">Search</button>
+					<button type="submit" class="btn search-field__submit">{t.common.search}</button>
 				</div>
 			</form>
 			{
 				!query && (
 					<p class="search-hint">
-						Searches post titles and full text. Not sure where to start?{" "}
-						<a href="/posts">Browse all posts</a>.
+						{t.search.hint}{" "}
+            <a href="/posts">{t.common.browseAllPosts}</a>.
 					</p>
 				)
 			}
@@ -120,10 +120,10 @@ const countLabel = nextCursor
 						<>
 							<div class="section-head">
 								<p class="search-summary">
-									<strong>{countLabel}</strong> for “{query}”
+									<strong>{countLabel}</strong> {t.search.forQuery} “{query}”
 								</p>
 								<a href="/posts" class="arrow-link">
-									All posts
+									{t.common.allPosts}
 									<svg
 										viewBox="0 0 24 24"
 										fill="none"
@@ -177,14 +177,13 @@ const countLabel = nextCursor
 						</>
 					) : (
 						<div class="empty-state">
-							<h2 class="empty-state__title">No results for “{query}”</h2>
+							<h2 class="empty-state__title">{t.search.noResults(query)}</h2>
 							<p class="empty-state__text">
-								Check the spelling, try fewer or different words, or browse
-								every post instead.
+								{t.search.noResultsLead}
 							</p>
 							<div class="empty-state__actions">
 								<a href="/posts" class="btn btn--ghost">
-									Browse all posts
+									{t.common.browseAllPosts}
 								</a>
 							</div>
 						</div>

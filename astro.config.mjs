@@ -4,6 +4,7 @@ import { defineConfig, fontProviders, sessionDrivers } from "astro/config";
 import emdash, { local } from "emdash/astro";
 import { sqlite } from "emdash/db";
 import { memberGroupsPlugin } from "./src/plugins/member-groups/index.ts";
+import { DEFAULT_LOCALE, dictionaries } from "./src/i18n/index.ts";
 
 /**
  * Everything the site persists lives under ./data. In the container the data
@@ -17,6 +18,14 @@ export default defineConfig({
 	adapter: node({
 		mode: "standalone",
 	}),
+	// UI language comes from the browser (Astro.preferredLocale), never from the
+	// URL — that would duplicate the German content under /de and /en. The
+	// locale list is derived from the dictionaries, so adding a translation is
+	// a single new file plus one entry in src/i18n/index.ts.
+	i18n: {
+		defaultLocale: DEFAULT_LOCALE,
+		locales: Object.keys(dictionaries),
+	},
 	// Sessions live on the data volume in the container, so restarts don't log
 	// everyone out. The cookie is a session cookie by default; readers can opt
 	// into 30 days with the checkbox on the sign-in confirmation page. No `ttl`:

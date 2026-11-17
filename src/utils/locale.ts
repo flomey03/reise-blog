@@ -1,4 +1,5 @@
 import { getI18nConfig } from "emdash";
+import { DEFAULT_LOCALE } from "../i18n";
 
 /**
  * The default locale from the site's Astro `i18n` config, if it names a
@@ -16,9 +17,9 @@ export function getSiteLocale(): string | undefined {
 	}
 }
 
-/** Formats a date in the site's locale, or in US English without one. */
+/** Formats a date in the site's locale, falling back to the default. */
 export function formatDate(date: Date, month: "long" | "short"): string {
-	return date.toLocaleDateString(getSiteLocale() ?? "en-US", {
+	return date.toLocaleDateString(getSiteLocale() ?? DEFAULT_LOCALE, {
 		year: "numeric",
 		month,
 		day: "numeric",

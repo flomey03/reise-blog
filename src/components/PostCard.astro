@@ -1,9 +1,10 @@
 ---
+import { getI18n } from "../i18n";
 import type { ContentEntry, InferCollectionData } from "emdash";
 import { Image } from "emdash/ui";
 import Byline from "./Byline.astro";
 import { formatDate } from "../utils/locale";
-import { formatReadingTime, getReadingTime } from "../utils/reading-time";
+import { getReadingTime } from "../utils/reading-time";
 
 interface Props {
 	post: ContentEntry<InferCollectionData<"posts">>;
@@ -22,13 +23,14 @@ const {
 	headingLevel = 2,
 	priority = false,
 } = Astro.props;
+const { t } = getI18n(Astro.preferredLocale);
 
 const Heading = `h${headingLevel}` as const;
 const href = `/posts/${post.id}`;
 const titleId = `post-${variant}-${post.id}`;
-const title = post.data.title || "Untitled";
+const title = post.data.title || t.common.untitled;
 const publishedAt = post.data.publishedAt ?? null;
-const readingTime = formatReadingTime(getReadingTime(post.data.content));
+const readingTime = t.common.minRead(getReadingTime(post.data.content));
 const bylines = post.data.bylines ?? [];
 const visibleTags = tags.slice(0, variant === "card" ? 2 : 3);
 
@@ -80,7 +82,7 @@ const sizes = {
 			{
 				variant === "feature" && (
 					<span class="post__cta arrow-link" aria-hidden="true">
-						Read article
+						{t.common.readArticle}
 						<svg
 							viewBox="0 0 24 24"
 							fill="none"
@@ -105,7 +107,7 @@ const sizes = {
 						size={variant === "feature" ? "sm" : "xs"}
 					/>
 					{visibleTags.length > 0 && (
-						<ul class="chips post__tags" aria-label="Tags">
+						<ul class="chips post__tags" aria-label={t.common.tags}>
 							{visibleTags.map((tag) => (
 								<li>
 									<a href={`/tag/${tag.slug}`} class="chip">
