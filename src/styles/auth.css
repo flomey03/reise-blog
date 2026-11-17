@@ -95,6 +95,37 @@
 	box-shadow: 0 0 0 3px var(--color-brand-ring);
 }
 
+/* Opt-in for the persistent session cookie. The generic input rule above would
+ * otherwise turn the checkbox into a full-sized text field. */
+.auth-form .auth-check {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--spacing-3);
+	font-family: var(--font-body);
+	font-size: var(--font-size-sm);
+	line-height: var(--leading-normal);
+	letter-spacing: normal;
+	text-transform: none;
+	color: var(--color-text);
+	cursor: pointer;
+}
+
+.auth-form input[type="checkbox"] {
+	width: 1rem;
+	height: 1rem;
+	flex: none;
+	margin-block-start: 0.15rem;
+	padding: 0;
+	accent-color: var(--color-brand);
+}
+
+.auth-form .auth-check small {
+	display: block;
+	margin-block-start: var(--spacing-1);
+	font-size: var(--font-size-xs);
+	color: var(--color-muted);
+}
+
 .auth-form .btn {
 	justify-self: start;
 }

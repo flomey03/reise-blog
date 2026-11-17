@@ -18,8 +18,13 @@ export default defineConfig({
 		mode: "standalone",
 	}),
 	// Sessions live on the data volume in the container, so restarts don't log
-	// everyone out.
-	session: { driver: sessionDrivers.fsLite({ base: `${dataDir}/sessions` }) },
+	// everyone out. The cookie is a session cookie by default; readers can opt
+	// into 30 days with the checkbox on the sign-in confirmation page. No `ttl`:
+	// Astro does not slide that expiry on activity, and the server-side session
+	// should outlive the cookie rather than the other way round.
+	session: {
+		driver: sessionDrivers.fsLite({ base: `${dataDir}/sessions` }),
+	},
 	image: {
 		layout: "constrained",
 		responsiveStyles: true,
