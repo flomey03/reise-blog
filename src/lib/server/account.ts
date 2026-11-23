@@ -30,6 +30,14 @@ function domainSpecificity(pattern: string): number {
 	return 10_000 + normalized.length;
 }
 
+/**
+ * Readable fallback until members can pick their own display name. The local
+ * part is already validated as non-empty by `ensureAccountForEmail`.
+ */
+export function displayNameFromEmail(email: string): string {
+	return email.slice(0, email.lastIndexOf("@")) || "Mitglied";
+}
+
 export async function ensureAccountForEmail(email: string): Promise<boolean> {
 	const at = email.lastIndexOf("@");
 	if (at <= 0) return false;
@@ -59,7 +67,7 @@ export async function ensureAccountForEmail(email: string): Promise<boolean> {
 			.values({
 				id: crypto.randomUUID(),
 				email,
-				name: null,
+				name: displayNameFromEmail(email),
 				avatar_url: null,
 				role: Math.max(Number(allowedDomain.default_role) || MEMBER_ROLE, MEMBER_ROLE),
 				// Proven by the sign-in link that follows.
